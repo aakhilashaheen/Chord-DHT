@@ -13,4 +13,9 @@ public class Machine {
         // Implement later
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return this.hostname + ":" + Integer.toString(this.port) + ":" + Integer.toString(this.hashID);
+    }
 }
