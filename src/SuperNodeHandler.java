@@ -20,7 +20,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         Machine m = new Machine(hostname, port);
         String nodeAddress;
         while(activeNodes.containsKey(m.hashID))
-            m.hashID++;
+            m.hashID = (m.hashID + 1) % (1 << maxNodes);
         activeNodes.put(m.hashID, m);
 
         if(activeNodes.size() == 1)
