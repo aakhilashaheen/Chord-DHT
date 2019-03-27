@@ -8,12 +8,16 @@ import org.apache.thrift.transport.TTransportFactory;
 public class SuperNodeServer {
     public static void main(String arg[]){
         try{
+            if(arg.length < 1) {
+                System.out.println("Expected the maximum number of nodes in the system");
+                return;
+            }
             //Create Thrift server socket
             TServerTransport serverTransport = new TServerSocket(Integer.parseInt(arg[0]));
             TTransportFactory factory = new TFramedTransport.Factory();
 
             //Create service request handler
-            SuperNodeHandler handler = new SuperNodeHandler();
+            SuperNodeHandler handler = new SuperNodeHandler(Integer.getInteger(arg[0]));
             SuperNode.Processor processor = new SuperNode.Processor(handler);
 
             //Set server arguments

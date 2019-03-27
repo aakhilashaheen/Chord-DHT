@@ -4,9 +4,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SuperNodeHandler implements SuperNode.Iface {
 
-    private AtomicBoolean joinInProgress;
+    private AtomicBoolean joinInProgress ;
     private int maxNodes;
     private HashMap<Integer, Machine> activeNodes;
+
+    public SuperNodeHandler(int maxNodes) {
+        this.maxNodes = maxNodes;
+        joinInProgress.set(false);
+    }
 
     @Override
     public String join(String hostname, int port) throws TException {
