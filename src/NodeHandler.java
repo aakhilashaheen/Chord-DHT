@@ -12,7 +12,6 @@ import java.util.List;
 public class NodeHandler implements Node.Iface {
     Integer nodeID;
     Integer port;
-    HashMap<String,String> fileSystem;
     @Override
     public String setGenre(String bookTitle, String bookGenre) throws TException {
         return null;
