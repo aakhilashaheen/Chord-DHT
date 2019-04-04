@@ -47,20 +47,20 @@ public class NodeHandler implements Node.Iface {
         String nodeInformationReceived = superNode.join(self.hostname, self.port);
 
         //keep trying until we can join (RPC calls)
-        while(!nodeInformationReceived.equals("NACK") ){
+        while(nodeInformationReceived.equals("NACK") ){
             System.err.println(" Could not join, retrying ..");
             Thread.sleep(1000);
             nodeInformationReceived = superNode.join(self.hostname, self.port);
         }
 
         //Extract current node information from the nodeInformationReceived from the super Node
-
+        System.out.println(nodeInformationReceived);
 
         // populate our own DHT and recursively update others
         updateDHT();
 
         // call post join after all DHTs are updated.
-        if(superNode.postJoin(self.hostname, self.port) != null)
+        if(!superNode.postJoin(self.hostname, self.port).equals("Success"))
             System.err.println("Machine("+nodeID+") Could not perform postJoin call.");
 
         superNodeTransport.close();

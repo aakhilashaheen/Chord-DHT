@@ -5,29 +5,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SuperNodeHandler implements SuperNode.Iface {
 
-    private AtomicBoolean joinInProgress ;
-    private int maxNodes;
+    private boolean joinInProgress = false;
+    private int maxNodes = 3;
     private List<Machine> activeNodes = new ArrayList<>();
     private Set<Integer> assignedIds = new HashSet<>();
-    private HashService hashService;
+    private HashService hashService = new HashService(maxNodes);
     String nodeList = "";
 
-    /* Need to pass the maximum number of nodes in the system to setup
-     */
-    public SuperNodeHandler(int maxNodes) {
-        this.maxNodes = maxNodes;
-        joinInProgress.set(false);
-        hashService = new HashService(maxNodes);
-    }
+
 
     @Override
     public String join(String hostname, int port) throws TException {
-        synchronized (joinInProgress) {
-            if(joinInProgress.get())
-                return "NACK";
-            else
-                joinInProgress.set(true);
-        }
+        if(joinInProgress)
+            return "NACK";
+        else
+            joinInProgress = true;
+
 
         Machine m = new Machine(hostname, port);
         int uniqueHashId = hashService.hash(m.toString());
@@ -45,7 +38,8 @@ public class SuperNodeHandler implements SuperNode.Iface {
 
     @Override
     public String postJoin(String hostname, int port) throws TException {
-        return "";
+        joinInProgress = false;
+        return "Success";
     }
 
     @Override

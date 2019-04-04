@@ -13,11 +13,11 @@ public class SuperNodeServer {
                 return;
             }
             //Create Thrift server socket
-            TServerTransport serverTransport = new TServerSocket(Integer.parseInt(arg[0]));
+            TServerTransport serverTransport = new TServerSocket(8080);
             TTransportFactory factory = new TFramedTransport.Factory();
 
             //Create service request handler
-            SuperNodeHandler handler = new SuperNodeHandler(Integer.getInteger(arg[0]));
+            SuperNodeHandler handler = new SuperNodeHandler();
             SuperNode.Processor processor = new SuperNode.Processor(handler);
 
             //Set server arguments
