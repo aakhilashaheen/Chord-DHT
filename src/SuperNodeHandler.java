@@ -35,7 +35,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         assignedIds.add(uniqueHashId);
         nodeList += m.toString() + ",";
         System.out.println(nodeList);
-        return  uniqueHashId + nodeList ;
+        return  uniqueHashId+ "|" + nodeList ;
 
     }
 

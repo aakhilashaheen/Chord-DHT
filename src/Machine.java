@@ -1,4 +1,4 @@
-public class Machine {
+public class Machine implements Comparable<Machine>{
     public final String hostname;
     public final int port;
     private int hashID;
@@ -7,6 +7,13 @@ public class Machine {
         this.hostname = hostname;
         this.port = port;
        // this.hashID = hash(hostname + Integer.toString(port));
+    }
+
+    public Machine(String hostname, int port, int hashID){
+        this.hostname = hostname;
+        this.port = port;
+        this.hashID = hashID;
+
     }
 
     public int getHashID() {
@@ -18,10 +25,20 @@ public class Machine {
     }
 
     @Override
-    public String toString() {
-        return "Machine{" +
-                "hostname='" + hostname + '\'' +
-                ", port=" + port +
-                '}';
+    public String toString(){
+        return hostname + ":" + port + ":" + hashID;
+    }
+
+    /**
+     * Method to compare two Machines based on their hashIds
+     */
+    @Override
+    public int compareTo(Machine other) {
+        // TODO Auto-generated method stub
+        if (this.hashID < other.hashID)
+            return -1;
+        else if (this.hashID > other.hashID)
+            return 1;
+        return 0;
     }
 }
