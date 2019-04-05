@@ -8,10 +8,14 @@ import org.apache.thrift.transport.*;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 public class NodeHandler implements Node.Iface {
-    Integer nodeID;
-    Integer port;
+    Machine self = null;
+    Machine predecessor = null;
+    Map<Integer, String> fingerTable = new HashMap();
+
     @Override
     public String setGenre(String bookTitle, String bookGenre) throws TException {
         return null;
@@ -22,13 +26,48 @@ public class NodeHandler implements Node.Iface {
         return null;
     }
 
+    /* This is used to update the finger table and predecessors of the current node.
+     */
     @Override
-    public void updateDHT() throws TException {
+    public void updateDHT(String nodesInTheSystem) throws TException {
+        String [] machines = nodesInTheSystem.split(",");
+        TreeSet<Machine> sortedNodesInTheSystem = getMachinesSortedByIds(machines);
+        findPredecessor(sortedNodesInTheSystem);
+
+        //Start building the finger table
+//        int numberOfEntries = Math.
+    }
+
+
+    private void findPredecessor(TreeSet<Machine> sortedNodesInTheSystem){
+        Machine[] allNodes = sortedNodesInTheSystem.toArray(new Machine[sortedNodesInTheSystem.size()]);
+        for(int i = 0 ; i< allNodes.length ; i++){
+            if(allNodes[i].hostname.equals(self.hostname)){
+                if(i == 0){
+                    predecessor =  allNodes[allNodes.length-1];
+                }else{
+                    predecessor = allNodes[i-1];
+                }
+            }
+        }
 
     }
+
+    /**
+     * Method to get a sorted set of IDs in the system
+     */
+    private TreeSet<Machine> getMachinesSortedByIds(String[] nodes) {
+        TreeSet<Machine> sortedMachines = new TreeSet<>();
+        for (int i = 0; i<nodes.length; i++){
+            String[] splits = nodes[i].split(":");
+            sortedMachines.add(new Machine(splits[0], Integer.parseInt(splits[1]), Integer.parseInt(splits[2])));
+        }
+        return sortedMachines;
+    }
+
+
     public NodeHandler(String superNodeIP, Integer superNodePort, Integer port) throws Exception {
 
-        this.port = port;
 
         // connect to the supernode as a client
         TTransport superNodeTransport = new TSocket(superNodeIP, superNodePort);
@@ -44,7 +83,7 @@ public class NodeHandler implements Node.Iface {
 
         // call join on superNode for a list
         String nodeInformationReceived = superNode.join(self.hostname, self.port);
-
+        self.setHashID(Integer.parseInt(nodeInformationReceived.split("|")[0]));
         //keep trying until we can join (RPC calls)
         while(nodeInformationReceived.equals("NACK") ){
             System.err.println(" Could not join, retrying ..");
@@ -56,11 +95,12 @@ public class NodeHandler implements Node.Iface {
         System.out.println(nodeInformationReceived);
 
         // populate our own DHT and recursively update others
-        updateDHT();
+        self.setHashID(Integer.valueOf(nodeInformationReceived.split(":")[0]));
+        updateDHT(nodeInformationReceived.split(":")[1]);
 
         // call post join after all DHTs are updated.
         if(!superNode.postJoin(self.hostname, self.port).equals("Success"))
-            System.err.println("Machine("+nodeID+") Could not perform postJoin call.");
+            System.err.println("Machine("+self.getHashID()+") Could not perform postJoin call.");
 
         superNodeTransport.close();
         start();
@@ -68,7 +108,7 @@ public class NodeHandler implements Node.Iface {
     //Begin Thrift Server instance for a Node and listen for connections on our port
     private void start() throws TException {
         //Create Thrift server socket
-        TServerTransport serverTransport = new TServerSocket(this.port);
+        TServerTransport serverTransport = new TServerSocket(self.port);
         TTransportFactory factory = new TFramedTransport.Factory();
 
         Node.Processor processor = new Node.Processor<>(this);
