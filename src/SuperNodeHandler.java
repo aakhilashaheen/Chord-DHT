@@ -1,53 +1,54 @@
 import org.apache.thrift.TException;
-import java.util.HashMap;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SuperNodeHandler implements SuperNode.Iface {
 
-    private AtomicBoolean joinInProgress ;
-    private int maxNodes;
-    private HashMap<Integer, Machine> activeNodes;
+    private boolean joinInProgress = false;
+    private int maxNodes = 3;
+    private List<Machine> activeNodes = new ArrayList<>();
+    private Set<Integer> assignedIds = new HashSet<>();
+    private HashService hashService = new HashService(maxNodes);
+    String nodeList = "";
 
-    public SuperNodeHandler(int maxNodes) {
-        this.maxNodes = maxNodes;
-        joinInProgress.set(false);
-    }
+
 
     @Override
     public String join(String hostname, int port) throws TException {
-        synchronized (joinInProgress) {
-            if(joinInProgress.get())
-                return "NACK";
-            else
-                joinInProgress.set(true);
-        }
 
+        if(joinInProgress)
+            return "NACK";
+        else
+            joinInProgress = true;
+
+        System.out.println("Received request from a node to join the DHT" + hostname + port);
         Machine m = new Machine(hostname, port);
-        String nodeAddress;
-        while(activeNodes.containsKey(m.hashID))
-            m.hashID = (m.hashID + 1) % (1 << maxNodes);
-        activeNodes.put(m.hashID, m);
-
-        if(activeNodes.size() == 1)
-            nodeAddress = m.toString();
-        else {
-            nodeAddress = getNode();
+        int uniqueHashId = hashService.hash(m.toString());
+        while(assignedIds.contains(uniqueHashId)){
+            System.out.println("This uniqueHashId has already been used" +uniqueHashId);
+            uniqueHashId = uniqueHashId + 1;
+            uniqueHashId = uniqueHashId % maxNodes;
         }
-        return m.hashID + "," + nodeAddress;
+        m.setHashID(uniqueHashId);
+        activeNodes.add(m);
+        assignedIds.add(uniqueHashId);
+        nodeList += m.toString() + ",";
+        System.out.println(nodeList);
+        return  uniqueHashId + nodeList ;
 
     }
 
     @Override
     public String postJoin(String hostname, int port) throws TException {
-        return "";
+        joinInProgress = false;
+        return "Success";
     }
 
     @Override
     public String getNode() throws TException {
         // TODO: Make this random
-        Integer j = new Integer(0);
-        while(!activeNodes.containsKey(j))
-            ++j;
-        return activeNodes.get(j).toString();
+        int index = (int)(Math.random() * (activeNodes.size()));
+        return activeNodes.get(index).toString();
     }
 }
