@@ -189,11 +189,8 @@ public class NodeHandler implements Node.Iface {
     private static boolean openIntervalCheck(int p, int lower, int upper) {
         if(lower <= upper)
             return lower < p && p < upper;
-        else if(p < lower)
-            return p < upper;
         else
-            return lower < p;
-
+            return lower < p || p < upper;
     }
 
 
