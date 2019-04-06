@@ -16,6 +16,12 @@ public class Machine implements Comparable<Machine>{
 
     }
 
+    public Machine (String description){
+        this.hostname = description.split(":")[0];
+        this.port = Integer.parseInt(description.split(":")[1]);
+        this.hashID = Integer.parseInt(description.split(":")[2]);
+    }
+
     public int getHashID() {
         return hashID;
     }
@@ -41,4 +47,6 @@ public class Machine implements Comparable<Machine>{
             return 1;
         return 0;
     }
+
+
 }
