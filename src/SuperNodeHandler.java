@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SuperNodeHandler implements SuperNode.Iface {
 
     private boolean joinInProgress = false;
-    private int maxNodes = 3;
+    private int maxNodes = 32;
     private List<Machine> activeNodes = new ArrayList<>();
     private Set<Integer> assignedIds = new HashSet<>();
     private HashService hashService = new HashService(maxNodes);
@@ -35,7 +35,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         assignedIds.add(uniqueHashId);
         nodeList += m.toString() + ",";
         System.out.println(nodeList);
-        return  uniqueHashId+ "|" + nodeList ;
+        return  uniqueHashId+ "#" + getNode();
 
     }
 
