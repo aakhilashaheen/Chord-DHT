@@ -44,7 +44,7 @@ public class NodeHandler implements Node.Iface {
 //        for (int i = 0; i<entries; i++){
 //            //Find the successor of the identifier (id + 2^(i)) in the system
 //            Machine succ = findSuccessor(sortedNodesInTheSystem, (self.getHashID() + (int)Math.pow(2, i)));
-//            fingerTable.put(i, succ);
+//            fingerTable.put(i, succ);/*
 //        }
 //
 //        //Print finger table for confirmation
@@ -130,12 +130,20 @@ public class NodeHandler implements Node.Iface {
     @Override
     public String findSuccessor(int key) throws TException {
         System.out.println("findSuccessor called");
+        //Check to see if all the finger table
         Machine that = new Machine(findPredecessor(key));
-        TTransport nodeTransport = new TSocket(that.hostname, that.port);
-        TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
-        Node.Client nodeClient = new Node.Client(nodeProtocol);
-        nodeTransport.open();
-        String succ = nodeClient.getSuccessor();
+        System.out.println("Predecessor found" + that.toString());
+        String succ = null;
+        if(!that.toString().equals(self.toString())){
+            TTransport nodeTransport = new TSocket(that.hostname, that.port);
+            TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
+            Node.Client nodeClient = new Node.Client(nodeProtocol);
+            nodeTransport.open();
+            succ = nodeClient.getSuccessor();
+            nodeTransport.close();
+        }else{
+            succ = successor.toString();
+        }
         return succ;
     }
 
@@ -144,24 +152,29 @@ public class NodeHandler implements Node.Iface {
         System.out.println("findPredecessor called");
        Machine ans = self;
        Machine succ = successor;
-       while(!(key == succ.getHashID() || openIntervalCheck(key, ans.getHashID(), succ.getHashID()))) {
+       while(!(openIntervalCheck(key, ans.getHashID(), succ.getHashID()) || key == succ.getHashID())) {
+           System.out.println("In the findPredecessor loop");
            if(ans.getHashID() == self.getHashID()){
-               ans = new Machine(closestPrecedingFinger(key));
+               System.out.println("Calling closest preceding finger in me");
+               Machine ans1 = new Machine(closestPrecedingFinger(key));
+               if(ans1.toString().equals(ans.toString()))
+                   break;
            }else{
                TTransport nodeTransport = new TSocket(ans.hostname, ans.port);
                TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
                Node.Client nodeClient = new Node.Client(nodeProtocol);
                nodeTransport.open();
+               System.out.println("Finding the closest preceeding finger using machine :" + ans.toString());
                ans = new Machine(nodeClient.closestPrecedingFinger(key));
                nodeTransport.close();
            }
 
-           TTransport nodeTransport = new TSocket(ans.hostname, ans.port);
-           TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
-           Node.Client nodeClient = new Node.Client(nodeProtocol);
-           nodeTransport.open();
-           succ = new Machine(nodeClient.getSuccessor());
-           nodeTransport.close();
+//           TTransport nodeTransport = new TSocket(ans.hostname, ans.port);
+//           TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
+//           Node.Client nodeClient = new Node.Client(nodeProtocol);
+//           nodeTransport.open();
+//           succ = new Machine(nodeClient.getSuccessor());
+//           nodeTransport.close();
        }
 
        return ans.toString();
@@ -174,6 +187,7 @@ public class NodeHandler implements Node.Iface {
     }
 
     private static boolean openIntervalCheck(int p, int lower, int upper) {
+        System.out.println("In open interval check with p: "+p+" lower :" + lower + "upper :" + upper);
         if(lower <= upper)
             return lower < p && p < upper;
         else
