@@ -144,7 +144,7 @@ public class NodeHandler implements Node.Iface {
         System.out.println("findPredecessor called");
        Machine ans = self;
        Machine succ = successor;
-       while(notIntervalCheck(key, ans.getHashID(), succ.getHashID() )){
+       while(!(key == succ.getHashID() || openIntervalCheck(key, ans.getHashID(), succ.getHashID()))) {
            if(ans.getHashID() == self.getHashID()){
                ans = new Machine(closestPrecedingFinger(key));
            }else{
@@ -173,24 +173,6 @@ public class NodeHandler implements Node.Iface {
         return true;
     }
 
-
-    private static boolean notIntervalCheck(int p, int lower, int upper) {
-        if(lower <= upper)
-            return !(p < lower && p <= upper);
-        else
-            return !(p < lower || p <= upper);
-    }
-
-    private static boolean intervalCheck(int p, int lower, int upper) {
-        if(lower <= upper)
-            return lower <= p && p < upper;
-        else if(p < lower)
-            return p < upper;
-        else
-            return lower <= p;
-
-    }
-
     private static boolean openIntervalCheck(int p, int lower, int upper) {
         if(lower <= upper)
             return lower < p && p < upper;
@@ -202,7 +184,8 @@ public class NodeHandler implements Node.Iface {
     @Override
     public boolean updateFingerTable(String node, int index) throws TException {
         Machine that = new Machine(node);
-        if (intervalCheck(that.getHashID(), self.getHashID(), finger[index].getHashID())) {
+        if (that.getHashID() == self.getHashID() ||
+                openIntervalCheck(that.getHashID(), self.getHashID(), finger[index].getHashID())) {
             finger[index] = that;
             //Machine p = new Machine(findPredecessor(self.getHashID() - (int) Math.pow(2, i)));
             try {
