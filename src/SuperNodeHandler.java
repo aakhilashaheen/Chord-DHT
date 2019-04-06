@@ -48,7 +48,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
     @Override
     public String getNode() throws TException {
         // TODO: Make this random
-        int index = (int)(Math.random() * (activeNodes.size()));
-        return activeNodes.get(index).toString();
+        //int index = (int)(Math.random() * (activeNodes.size()));
+        return activeNodes.get(0).toString();
     }
 }

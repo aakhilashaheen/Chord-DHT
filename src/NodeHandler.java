@@ -58,7 +58,7 @@ public class NodeHandler implements Node.Iface {
     //Initialize finger table of local node
     // Coordinates of arbitrary node given to contact
     public boolean initFingerTable(String ipToContact, int portToContact ){
-
+        System.out.println("initFingerTable called");
         try {
             TTransport nodeTransport = new TSocket(ipToContact, portToContact);
             TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
@@ -90,6 +90,7 @@ public class NodeHandler implements Node.Iface {
 
     // Update all nodes whose finger tables should refer to n
     public boolean updateOthers(){
+        System.out.println("Update others called");
         try {
             for (int i = 0; i < finger.length; i++) {
                 Machine p = new Machine(findPredecessor(self.getHashID() - (int) Math.pow(2, i)));
@@ -109,8 +110,9 @@ public class NodeHandler implements Node.Iface {
     public void updateDHT(String nodeInTheSystem) throws TException{
         String ipOfNodeToContact = nodeInTheSystem.split(":")[0];
         int portOfTheNodeToContact = Integer.parseInt(nodeInTheSystem.split(":")[1]);
-
+        System.out.println("Update DHT called");
         if(!ipOfNodeToContact.equals(self.hostname) || portOfTheNodeToContact != self.port ){
+
             initFingerTable(ipOfNodeToContact, portOfTheNodeToContact);
             updateOthers();
 
@@ -121,11 +123,13 @@ public class NodeHandler implements Node.Iface {
                 finger[i] = self;
             }
             predecessor = self;
+            successor = self;
         }
     }
 
     @Override
     public String findSuccessor(int key) throws TException {
+        System.out.println("findSuccessor called");
         Machine that = new Machine(findPredecessor(key));
         TTransport nodeTransport = new TSocket(that.hostname, that.port);
         TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
@@ -137,6 +141,7 @@ public class NodeHandler implements Node.Iface {
 
     @Override
     public String findPredecessor(int key) throws TException {
+        System.out.println("findPredecessor called");
        Machine ans = self;
        Machine succ = successor;
        while(notIntervalCheck(key, ans.getHashID(), succ.getHashID() )){
@@ -291,7 +296,6 @@ public class NodeHandler implements Node.Iface {
 
         //Create a Machine data type representing ourselves
         self = new Machine(InetAddress.getLocalHost().getHostName(), port);
-
 
         // call join on superNode for a list
         String nodeInformationReceived = superNode.join(self.hostname, self.port);
