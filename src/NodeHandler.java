@@ -94,12 +94,14 @@ public class NodeHandler implements Node.Iface {
         try {
             for (int i = 0; i < finger.length; i++) {
                 Machine p = new Machine(findPredecessor(self.getHashID() - (int) Math.pow(2, i)));
-                TTransport nodeTransport = new TSocket(p.hostname, p.port);
-                TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
-                Node.Client nodeClient = new Node.Client(nodeProtocol);
-                nodeTransport.open();
+                if(!p.toString().equals(self.toString())){
+                    TTransport nodeTransport = new TSocket(p.hostname, p.port);
+                    TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
+                    Node.Client nodeClient = new Node.Client(nodeProtocol);
+                    nodeTransport.open();
                 nodeClient.updateFingerTable(self.toString(), i);
                 nodeTransport.close();
+                }
             }
         } catch (Exception e) { e.printStackTrace(); }
         return true;
@@ -149,7 +151,7 @@ public class NodeHandler implements Node.Iface {
 
     @Override
     public String findPredecessor(int key) throws TException {
-        System.out.println("findPredecessor called");
+        System.out.println("findPredecessor called " + key);
        Machine ans = self;
        Machine succ = successor;
        while(!(openIntervalCheck(key, ans.getHashID(), succ.getHashID()) || key == succ.getHashID())) {
@@ -176,7 +178,7 @@ public class NodeHandler implements Node.Iface {
 //           succ = new Machine(nodeClient.getSuccessor());
 //           nodeTransport.close();
        }
-
+        System.out.println("Predecessor for key: "+key +"found to be: "+ans.toString());
        return ans.toString();
     }
 
