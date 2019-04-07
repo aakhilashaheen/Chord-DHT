@@ -8,8 +8,11 @@ public class SuperNodeHandler implements SuperNode.Iface {
     private boolean joinInProgress = false;
     private int maxNodes = 32;
     private List<Machine> activeNodes = new ArrayList<>();
-    private Set<Integer> assignedIds = new HashSet<>();
+    private List<Integer> assignedIds = new ArrayList<>();
     private HashService hashService = new HashService(maxNodes);
+    int numberOfNodesInTheSystem = 0;
+    int[] indexes = new int[]{16,3,11,4,23};
+
     String nodeList = "";
 
 
@@ -30,12 +33,37 @@ public class SuperNodeHandler implements SuperNode.Iface {
             uniqueHashId = uniqueHashId + 1;
             uniqueHashId = uniqueHashId % maxNodes;
         }
+        /*Set nodehashes explicitly
+
+         */
+//
+//        uniqueHashId = indexes[numberOfNodesInTheSystem];
+//        numberOfNodesInTheSystem++;
+
         m.setHashID(uniqueHashId);
         activeNodes.add(m);
         assignedIds.add(uniqueHashId);
+
+        Collections.sort(assignedIds,Collections.reverseOrder());
+
+        int predID = uniqueHashId;
+        Iterator<Integer> iterator = assignedIds.iterator();
+        while (iterator.hasNext()) {
+            int next = iterator.next();
+            if (next < predID) {
+                predID = next;
+                break;
+            }
+        }
+        if (predID == uniqueHashId)
+            predID = Collections.max(assignedIds);
+
+        Machine prev = getNode(predID);
+        if(prev == null)
+            return "FALSE";
         nodeList += m.toString() + ",";
         System.out.println(nodeList);
-        return  uniqueHashId+ "#" + getNode();
+        return  uniqueHashId+ "#" + prev.toString();
 
     }
 
@@ -50,5 +78,14 @@ public class SuperNodeHandler implements SuperNode.Iface {
         // TODO: Make this random
         //int index = (int)(Math.random() * (activeNodes.size()));
         return activeNodes.get(0).toString();
+    }
+
+    public Machine getNode(int id){
+        for(int i = 0; i < activeNodes.size() ; i++){
+            if(activeNodes.get(i).getHashID() == id)
+                return activeNodes.get(i);
+        }
+
+        return null;
     }
 }
