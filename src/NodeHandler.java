@@ -3,6 +3,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.*;
 
 import java.net.InetAddress;
@@ -89,7 +90,7 @@ public class NodeHandler implements Node.Iface {
 
             }
             printFingerTable();
-            nodeTransport.close();
+            nodeTransport1.close();
 
         } catch (TException e) {
             e.printStackTrace();
@@ -103,19 +104,27 @@ public class NodeHandler implements Node.Iface {
         System.out.println("Update others called");
         try {
 
-            for (int i = 0; i < fingerTable.length; i++) {
-                int id = (self.getHashID() - (int)Math.pow(2,i-1) + 1) % keySpace;
+            for (int i = 0; i < fingerTable.length-1; i++) {
+                int id = (self.getHashID() - (int)Math.pow(2, i)) % keySpace;
+                System.out.println("Finding predecessor of " + id);
                 Machine p = new Machine(findPredecessor(id));
                 if(!p.toString().equals(self.toString())){
                     TTransport nodeTransport = new TSocket(p.hostname, p.port);
                     TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
                     Node.Client nodeClient = new Node.Client(nodeProtocol);
+                    System.out.println("Connecting from " + self.toString() + " to " + p.toString());
                     nodeTransport.open();
-                    nodeClient.updateFingerTable(self.toString(), i);
+                    nodeClient.updateFingerTable(self.toString(), i+1);
                     nodeTransport.close();
+                } else {
+                    updateFingerTable(self.toString(), i+1);
                 }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (TTransportException e) { System.out.println("TTransportException found of type " + e.getType());
+        e.printStackTrace(); }
+        catch (Exception e) { e.printStackTrace(); }
+
+        System.out.println("Updated others completed");
         return true;
     }
 
@@ -166,9 +175,10 @@ public class NodeHandler implements Node.Iface {
         int succID = fingerTable[1].getSuccessor().getHashID();
         int normalInterval = 1;
 
-
         if (myID >= succID)
             normalInterval = 0;
+
+        System.out.println("Before findPredecessor loop with id " + id);
         while ((normalInterval==1 && (id <= myID || id > succID)) ||
                 (normalInterval==0 && (id <= myID && id > succID))) {
 
@@ -179,36 +189,46 @@ public class NodeHandler implements Node.Iface {
 //
 //            n = new Node(Integer.parseInt(tokens[0]),tokens[1],tokens[2]);
 
-            
-            TTransport nodeTransport = new TSocket(n.hostname, n.port);
-            TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
-            Node.Client nodeClient = new Node.Client(nodeProtocol);
-            System.out.println("Connecting to server " + n.hostname + "with port: "+n.port );
-            nodeTransport.open();
-            n = new Machine(nodeClient.closestPrecedingFinger(id));
-            nodeTransport.close();
-
-
-
+            if(self.getHashID() != n.getHashID()) {
+                TTransport nodeTransport = new TSocket(n.hostname, n.port);
+                TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
+                Node.Client nodeClient = new Node.Client(nodeProtocol);
+                System.out.println("Connecting to server " + n.hostname + "with port: " + n.port);
+                nodeTransport.open();
+                n = new Machine(nodeClient.closestPrecedingFinger(id));
+                nodeTransport.close();
+            } else {
+                System.out.println("No connection needed.");
+                n = new Machine(closestPrecedingFinger(id));
+                System.out.println("closestPrecedingFinger isn't a problem.");
+            }
             myID = n.getHashID();
-
+            System.out.println("Just about to connect to " + n.toString());
 //            String request2 = "getSuc/" ;
 //            String result2 = makeConnection(n.getIP(),n.getPort(),request2);
 //            String[] tokens2 = result2.split("/");
 
-            TTransport nodeTransport1 = new TSocket(n.hostname, n.port);
-            TProtocol nodeProtocol1 = new TBinaryProtocol(new TFramedTransport(nodeTransport1));
-            Node.Client nodeClient1 = new Node.Client(nodeProtocol);
-            nodeTransport1.open();
-            succID = (new Machine(nodeClient1.getSuccessor())).getHashID();
-            nodeTransport1.close();
+            try {
+                TTransport nodeTransport1 = new TSocket(n.hostname, n.port);
+                System.out.println(n.toString() + "Transport completed.");
+                TProtocol nodeProtocol1 = new TBinaryProtocol(new TFramedTransport(nodeTransport1));
+                Node.Client nodeClient1 = new Node.Client(nodeProtocol1);
+                nodeTransport1.open();
+                System.out.println(n.toString() + "Connection open.");
+                String succ = nodeClient1.getSuccessor();
+                System.out.println(succ + " obtained.");
+                succID = new Machine(succ).getHashID();
+                System.out.println("succID obtained is" + succID);
+                nodeTransport1.close();
+            } catch (Exception e) { e.printStackTrace(); }
+            System.out.println("NodeClient1 connected.");
 
             if (myID >= succID)
                 normalInterval = 0;
             else normalInterval = 1;
         }
         //System.out.println("Returning n" + n.getID());
-
+        System.out.println("findPredecessor loop's done");
         return n.toString();
 
 //        System.out.println("findPredecessor called " + key);
@@ -259,22 +279,37 @@ public class NodeHandler implements Node.Iface {
 
     @Override
     public boolean updateFingerTable(String node, int index) throws TException {
+        System.out.println("Update finger table called for node : " + node + "for index :" + index);
         Machine that = new Machine(node);
+        boolean check = that.getHashID() == self.getHashID();
+        System.out.println("First check works, evaluates to " + check);
+        //check = check || openIntervalCheck(that.getHashID(), self.getHashID(),
+        //        fingerTable[index].getSuccessor().getHashID());
+        int p = that.getHashID();
+        int lower = self.getHashID();
+        System.out.println(fingerTable[index] == null);
+        int upper = fingerTable[index].getSuccessor().getHashID();
+        System.out.println("First argument evaluates to " + p + ", second argument evaluates to " + lower +
+               ", third argument evaluates to " + upper);
         if (that.getHashID() == self.getHashID() ||
                 openIntervalCheck(that.getHashID(), self.getHashID(), fingerTable[index].getSuccessor().getHashID())) {
+            System.out.println("We're in the if statement!");
+            System.out.println("Setting finger " + index);
             fingerTable[index].setSuccessor(that);
             //Machine p = new Machine(findPredecessor(self.getHashID() - (int) Math.pow(2, i)));
+            System.out.println("Connecting to " + predecessor.toString());
             try {
                 TTransport nodeTransport = new TSocket(predecessor.hostname, predecessor.port);
                 TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
                 Node.Client nodeClient = new Node.Client(nodeProtocol);
                 nodeTransport.open();
+                System.out.println("Connected to " + predecessor.toString());
                 nodeClient.updateFingerTable(that.toString(), index);
                 nodeTransport.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        } else { System.out.println("Not doing anything"); }
         printFingerTable();
         return true;
     }
@@ -286,6 +321,7 @@ public class NodeHandler implements Node.Iface {
 
     @Override
     public String getSuccessor() throws TException {
+        System.out.println("Called getSuccessor with result " + fingerTable[1].getSuccessor().toString());
         return fingerTable[1].getSuccessor().toString();
     }
 
@@ -377,7 +413,9 @@ public class NodeHandler implements Node.Iface {
         self = new Machine(InetAddress.getLocalHost().getHostName(), port);
 
         // call join on superNode for a list
+        System.out.println("Calling join");
         String predecessorNode = superNode.join(self.hostname, self.port);
+        System.out.println("obtained response" + predecessorNode);
         //keep trying until we can join (RPC calls)
         while(predecessorNode.equals("NACK") ){
             System.err.println(" Could not join, retrying ..");
@@ -439,18 +477,18 @@ public class NodeHandler implements Node.Iface {
     //Begin Thrift Server instance for a Node and listen for connections on our port
     private void start() throws TException {
         //Create Thrift server socket
-        TServerTransport serverTransport = new TServerSocket(self.port);
+            TServerTransport serverTransport = new TServerSocket(self.port);
         TTransportFactory factory = new TFramedTransport.Factory();
 
         Node.Processor processor = new Node.Processor<>(this);
 
         //Set Server Arguments
-        TServer.Args serverArgs = new TServer.Args(serverTransport);
+        TThreadPoolServer.Args serverArgs = new TThreadPoolServer.Args(serverTransport);
         serverArgs.processor(processor); //Set handler
         serverArgs.transportFactory(factory); //Set FramedTransport (for performance)
 
         //Run server as single thread
-        TServer server = new TSimpleServer(serverArgs);
+        TServer server = new TThreadPoolServer(serverArgs);
         server.serve();
     }
 
