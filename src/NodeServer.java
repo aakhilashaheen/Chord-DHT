@@ -3,7 +3,7 @@ import java.net.InetAddress;
 public class NodeServer {
     public static void main(String[] args) {
         if(args.length < 3) {
-            System.err.println("Usage: java NodeHandler <superNodeIP> <superNodePort> <port>");
+            System.err.println("Usage: java NodeHandler1 <superNodeIP> <superNodePort> <port>");
             return;
         }
         try {

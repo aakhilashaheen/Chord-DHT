@@ -3,6 +3,8 @@ public class Machine implements Comparable<Machine>{
     public final int port;
     private int hashID;
 
+
+
     public Machine(String hostname, int port) {
         this.hostname = hostname;
         this.port = port;

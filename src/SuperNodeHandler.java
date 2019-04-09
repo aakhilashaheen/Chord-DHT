@@ -44,7 +44,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         activeNodes.add(m);
         assignedIds.add(uniqueHashId);
 
-        Collections.sort(assignedIds,Collections.reverseOrder());
+        Collections.sort(assignedIds);
 
         int predID = uniqueHashId;
         Iterator<Integer> iterator = assignedIds.iterator();
@@ -69,7 +69,14 @@ public class SuperNodeHandler implements SuperNode.Iface {
 
     @Override
     public String postJoin(String hostname, int port) throws TException {
+
+        Collections.sort(assignedIds,Collections.reverseOrder());
+        for(int i = 0 ;i < assignedIds.size() ; i ++){
+
+
+        }
         joinInProgress = false;
+
         return "Success";
     }
 

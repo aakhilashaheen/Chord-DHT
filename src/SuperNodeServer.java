@@ -13,20 +13,14 @@ public class SuperNodeServer {
                 return;
             }
             //Create Thrift server socket
-            TServerTransport serverTransport = new TServerSocket(8080);
-            TTransportFactory factory = new TFramedTransport.Factory();
+            TServerTransport serverTransport = new TServerSocket(5000);
 
             //Create service request handler
             SuperNodeHandler handler = new SuperNodeHandler();
             SuperNode.Processor processor = new SuperNode.Processor(handler);
 
-            //Set server arguments
-            TServer.Args args = new TServer.Args(serverTransport);
-            args.processor(processor);	 //Set handler
-            args.transportFactory(factory);  //Set FramedTransport (for performance)
-
             //Run server as a single thread
-            TServer server = new TSimpleServer(args);
+            TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
             server.serve();
         }
         catch (Exception e){

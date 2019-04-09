@@ -1,11 +1,10 @@
 public class FingerTable {
-    private int start;
     private int intervalStart;
     private int intervalEnd;
     private Machine successor;
 
-    public FingerTable(int start, int intervalStart, int intervalEnd, Machine successor) {
-        this.start = start;
+    public FingerTable(int intervalStart, int intervalEnd, Machine successor) {
+
         this.intervalStart = intervalStart;
         this.intervalEnd = intervalEnd;
         this.successor = successor;
@@ -15,13 +14,7 @@ public class FingerTable {
     public FingerTable() {
     }
 
-    public int getStart() {
-        return start;
-    }
 
-    public void setStart(int start) {
-        this.start = start;
-    }
 
     public int getIntervalStart() {
         return intervalStart;
