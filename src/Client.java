@@ -50,12 +50,12 @@ public class Client {
             Machine serverInfo = new Machine(args[0], Integer.parseInt(args[1]));
             Client client = new Client(serverInfo);
 
-            Machine nodeAddress;
-            do {
+            Machine nodeAddress = client.connectToServer();;
+            while(nodeAddress == null) {
                 nodeAddress = client.connectToServer();
                 System.err.println("Client: Failed to connect to the DHT, retrying in 1 second ...");
                 Thread.sleep(1000);
-            } while(nodeAddress == null);
+            }
 
             System.out.println("Contacted node at " + nodeAddress.hostname + ":" + nodeAddress.port);
             System.out.println("\n\n -------- Welcome to the Terminal for book look up --------\n\n");
