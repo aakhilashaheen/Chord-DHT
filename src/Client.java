@@ -1,17 +1,17 @@
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
 import java.io.File;
+import java.util.Scanner;
 
 public class Client {
 
     TTransport serverTransport, nodeTransport;
     SuperNode.Client superNode;
-    Node.Client node;
+    static Node.Client node;
 
     public Client(Machine server) {
         serverTransport = new TSocket(server.hostname, server.port);
@@ -60,10 +60,28 @@ public class Client {
             System.out.println("Contacted node at " + nodeAddress.hostname + ":" + nodeAddress.port);
             System.out.println("\n\n -------- Welcome to the Terminal for book look up --------\n\n");
 
+            Scanner inp = new Scanner(System.in);
 
-            client.node.setGenre("Alice in Wonderland", "Fantasy");
-            String result = client.node.getGenre("Alice in Wonderland");
-            System.out.println("Result worked! " + result);
+            while(true) {
+                System.out.print("Enter command > ");
+                String command = inp.nextLine();
+                if(command.toLowerCase().equals("get")) {
+                    System.out.print("Enter book title > ");
+                    String bookTitle = inp.nextLine();
+                    System.out.println("The genre of " + bookTitle + " is " + node.getGenre(bookTitle));
+                } else if(command.toLowerCase().equals("set")) {
+                    System.out.print("Enter book title > ");
+                    String bookTitle = inp.nextLine();
+                    System.out.print("Enter book genre > ");
+                    String bookGenre = inp.nextLine();
+                    node.setGenre(bookTitle, bookGenre);
+                    System.out.println("Title set.");
+                } else if(command.toLowerCase().equals("finger")){
+                    node.printFingerTable();
+                } else {
+                    System.out.println("Could not understand command. Please try again.");
+                }
+            }
         }
         catch(Exception e) {
             e.printStackTrace();
