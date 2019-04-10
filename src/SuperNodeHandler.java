@@ -27,6 +27,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         this.hashService = new HashService(maxNodes);
         int minFingerTableSizeNeeded = (int) Math.ceil(Math.log(maxNodes) / Math.log(2));
         this.keySpace = (int) Math.pow(2,minFingerTableSizeNeeded);
+        System.out.println("Keyspaces size : "+keySpace);
     }
 
 

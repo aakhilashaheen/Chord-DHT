@@ -20,7 +20,7 @@ public class NodeHandler implements Node.Iface {
     int keySpace;
     private FingerTable[] fingers;
     private static Map<String, String> bookGenreMap= new HashMap<String, String>();
-
+    private static HashService hashService;
     @Override
     public void setGenre(String bookTitle, String bookGenre) throws TException {
         System.out.println("Trying to set the genre at this node : " + self.toString());
@@ -274,6 +274,7 @@ public class NodeHandler implements Node.Iface {
     public NodeHandler(String superNodeIP, Integer superNodePort, Integer port, Integer maxNodes) throws Exception {
         fingerTableSize = (int) Math.ceil(Math.log(maxNodes) / Math.log(2));
         keySpace = (int) Math.pow(2,fingerTableSize);
+        hashService = new HashService(maxNodes);
         // connect to the supernode as a client
         TTransport superNodeTransport = new TSocket(superNodeIP, superNodePort);
         TProtocol superNodeProtocol = new TBinaryProtocol(superNodeTransport);
