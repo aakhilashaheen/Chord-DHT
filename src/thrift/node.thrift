@@ -1,5 +1,5 @@
 service Node {
-    string setGenre(1: string bookTitle, 2: string bookGenre),
+    void setGenre(1: string bookTitle, 2: string bookGenre),
     string getGenre(1: string bookTitle),
     void updateDHT(1: string nodesInTheSystem),
     string findSuccessor(1: i32 key),

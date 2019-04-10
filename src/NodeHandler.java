@@ -8,6 +8,8 @@ import org.apache.thrift.transport.*;
 
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NodeHandler implements Node.Iface {
 
@@ -17,15 +19,58 @@ public class NodeHandler implements Node.Iface {
     int m;
     int keySpace;
     private FingerTable[] fingers;
+    private static Map<String, String> bookGenreMap= new HashMap<String, String>();
 
     @Override
-    public String setGenre(String bookTitle, String bookGenre) throws TException {
-        return null;
+    public void setGenre(String bookTitle, String bookGenre) throws TException {
+        System.out.println("Trying to set the genre at this node : " + self.toString());
+        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+        Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));
+        if(destNode.getHashID() == nodeKey){
+           bookGenreMap.put(bookTitle, bookGenre);
+        }else{
+            try {
+                TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
+                TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+                Node.Client startNodeClient = new Node.Client(nodeProtocol);
+                System.out.println("Node is trying to connect to the destination node." + destNode.toString());
+                nodeTransport.open();
+                startNodeClient.setGenre(bookTitle, bookGenre);
+                nodeTransport.close();
+            } catch (Exception e) {
+                System.out.println("Could not insert book genre into new node") ;
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @Override
     public String getGenre(String bookTitle) throws TException {
-        return null;
+       System.out.println("Trying to get book genre from this node "+ self.toString());
+        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+       Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));
+       String bookGenre = "" ;
+       if(destNode.getHashID() == nodeKey){
+           bookGenre = bookGenreMap.get(bookTitle);
+           if(bookGenre == null)
+               System.out.println("No entry found");
+       }else{
+           try {
+               TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
+               TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+               Node.Client startNodeClient = new Node.Client(nodeProtocol);
+               System.out.println("Node is trying to connect to the destination node." + destNode.toString());
+               nodeTransport.open();
+               startNodeClient.getGenre(bookTitle);
+               nodeTransport.close();
+           } catch (Exception e) {
+               System.out.println("Could not get the book " + bookTitle) ;
+               e.printStackTrace();
+           }
+
+       }
+       return bookGenre;
     }
 
     @Override
