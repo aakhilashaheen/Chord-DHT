@@ -15,13 +15,16 @@ public class SuperNodeServer {
             }
             //Create Thrift server socket
             TServerTransport serverTransport = new TServerSocket(1729);
+            //TTransportFactory factory = new TFramedTransport.Factory();
 
             //Create service request handler
             SuperNodeHandler handler = new SuperNodeHandler();
             SuperNode.Processor processor = new SuperNode.Processor(handler);
 
             //Run server as a single thread
-            TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+            TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport)
+                    .processor(processor)//.transportFactory(factory)
+            );
             server.serve();
         }
         catch (Exception e){

@@ -15,18 +15,23 @@ public class Client {
 
     public Client(Machine server) {
         serverTransport = new TSocket(server.hostname, server.port);
+        System.out.println("Client initialized.");
     }
 
     private Machine connectToServer() {
         try {
             serverTransport.open();
-            TProtocol serverProtocol = new TBinaryProtocol(new TFramedTransport(serverTransport));
+            System.out.println("Connected to server");
+            TProtocol serverProtocol = new TBinaryProtocol(serverTransport);
             superNode = new SuperNode.Client(serverProtocol);
             Machine nodeAddress = new Machine(superNode.getNode());
+            System.out.println("Address received" + nodeAddress.toString());
             serverTransport.close();
+            System.out.println("Server connection closed.");
 
             nodeTransport = new TSocket(nodeAddress.hostname, nodeAddress.port);
-            TProtocol nodeProtocol = new TBinaryProtocol(new TFramedTransport(nodeTransport));
+            TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+            nodeTransport.open();
             node = new Node.Client(nodeProtocol);
             return nodeAddress;
         }
@@ -43,8 +48,6 @@ public class Client {
         }
         try {
             Machine serverInfo = new Machine(args[0], Integer.parseInt(args[1]));
-
-
             Client client = new Client(serverInfo);
 
             Machine nodeAddress;
@@ -52,7 +55,7 @@ public class Client {
                 nodeAddress = client.connectToServer();
                 System.err.println("Client: Failed to connect to the DHT, retrying in 1 second ...");
                 Thread.sleep(1000);
-            } while(nodeAddress != null);
+            } while(nodeAddress == null);
 
             System.out.println("Contacted node at " + nodeAddress.hostname + ":" + nodeAddress.port);
             System.out.println("\n\n -------- Welcome to the Terminal for book look up --------\n\n");
