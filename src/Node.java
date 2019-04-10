@@ -37,6 +37,10 @@ public class Node {
 
   public interface Iface {
 
+    public String setGenreRecursively(String bookTitle, String bookGenre) throws org.apache.thrift.TException;
+
+    public String getGenreRecursively(String bookTitle) throws org.apache.thrift.TException;
+
     public void setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException;
 
     public String getGenre(String bookTitle) throws org.apache.thrift.TException;
@@ -64,6 +68,10 @@ public class Node {
   }
 
   public interface AsyncIface {
+
+    public void setGenreRecursively(String bookTitle, String bookGenre, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getGenreRecursively(String bookTitle, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void setGenre(String bookTitle, String bookGenre, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -109,6 +117,53 @@ public class Node {
 
     public Client(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
       super(iprot, oprot);
+    }
+
+    public String setGenreRecursively(String bookTitle, String bookGenre) throws org.apache.thrift.TException
+    {
+      send_setGenreRecursively(bookTitle, bookGenre);
+      return recv_setGenreRecursively();
+    }
+
+    public void send_setGenreRecursively(String bookTitle, String bookGenre) throws org.apache.thrift.TException
+    {
+      setGenreRecursively_args args = new setGenreRecursively_args();
+      args.setBookTitle(bookTitle);
+      args.setBookGenre(bookGenre);
+      sendBase("setGenreRecursively", args);
+    }
+
+    public String recv_setGenreRecursively() throws org.apache.thrift.TException
+    {
+      setGenreRecursively_result result = new setGenreRecursively_result();
+      receiveBase(result, "setGenreRecursively");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "setGenreRecursively failed: unknown result");
+    }
+
+    public String getGenreRecursively(String bookTitle) throws org.apache.thrift.TException
+    {
+      send_getGenreRecursively(bookTitle);
+      return recv_getGenreRecursively();
+    }
+
+    public void send_getGenreRecursively(String bookTitle) throws org.apache.thrift.TException
+    {
+      getGenreRecursively_args args = new getGenreRecursively_args();
+      args.setBookTitle(bookTitle);
+      sendBase("getGenreRecursively", args);
+    }
+
+    public String recv_getGenreRecursively() throws org.apache.thrift.TException
+    {
+      getGenreRecursively_result result = new getGenreRecursively_result();
+      receiveBase(result, "getGenreRecursively");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getGenreRecursively failed: unknown result");
     }
 
     public void setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException
@@ -393,6 +448,73 @@ public class Node {
 
     public AsyncClient(org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.transport.TNonblockingTransport transport) {
       super(protocolFactory, clientManager, transport);
+    }
+
+    public void setGenreRecursively(String bookTitle, String bookGenre, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      setGenreRecursively_call method_call = new setGenreRecursively_call(bookTitle, bookGenre, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class setGenreRecursively_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String bookTitle;
+      private String bookGenre;
+      public setGenreRecursively_call(String bookTitle, String bookGenre, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.bookTitle = bookTitle;
+        this.bookGenre = bookGenre;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("setGenreRecursively", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        setGenreRecursively_args args = new setGenreRecursively_args();
+        args.setBookTitle(bookTitle);
+        args.setBookGenre(bookGenre);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public String getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_setGenreRecursively();
+      }
+    }
+
+    public void getGenreRecursively(String bookTitle, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getGenreRecursively_call method_call = new getGenreRecursively_call(bookTitle, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getGenreRecursively_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String bookTitle;
+      public getGenreRecursively_call(String bookTitle, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.bookTitle = bookTitle;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getGenreRecursively", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getGenreRecursively_args args = new getGenreRecursively_args();
+        args.setBookTitle(bookTitle);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public String getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getGenreRecursively();
+      }
     }
 
     public void setGenre(String bookTitle, String bookGenre, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
@@ -789,6 +911,8 @@ public class Node {
     }
 
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
+      processMap.put("setGenreRecursively", new setGenreRecursively());
+      processMap.put("getGenreRecursively", new getGenreRecursively());
       processMap.put("setGenre", new setGenre());
       processMap.put("getGenre", new getGenre());
       processMap.put("updateDHT", new updateDHT());
@@ -802,6 +926,46 @@ public class Node {
       processMap.put("closestPrecedingFinger", new closestPrecedingFinger());
       processMap.put("printFingerTable", new printFingerTable());
       return processMap;
+    }
+
+    public static class setGenreRecursively<I extends Iface> extends org.apache.thrift.ProcessFunction<I, setGenreRecursively_args> {
+      public setGenreRecursively() {
+        super("setGenreRecursively");
+      }
+
+      public setGenreRecursively_args getEmptyArgsInstance() {
+        return new setGenreRecursively_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public setGenreRecursively_result getResult(I iface, setGenreRecursively_args args) throws org.apache.thrift.TException {
+        setGenreRecursively_result result = new setGenreRecursively_result();
+        result.success = iface.setGenreRecursively(args.bookTitle, args.bookGenre);
+        return result;
+      }
+    }
+
+    public static class getGenreRecursively<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getGenreRecursively_args> {
+      public getGenreRecursively() {
+        super("getGenreRecursively");
+      }
+
+      public getGenreRecursively_args getEmptyArgsInstance() {
+        return new getGenreRecursively_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getGenreRecursively_result getResult(I iface, getGenreRecursively_args args) throws org.apache.thrift.TException {
+        getGenreRecursively_result result = new getGenreRecursively_result();
+        result.success = iface.getGenreRecursively(args.bookTitle);
+        return result;
+      }
     }
 
     public static class setGenre<I extends Iface> extends org.apache.thrift.ProcessFunction<I, setGenre_args> {
@@ -1060,6 +1224,8 @@ public class Node {
     }
 
     private static <I extends AsyncIface> Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
+      processMap.put("setGenreRecursively", new setGenreRecursively());
+      processMap.put("getGenreRecursively", new getGenreRecursively());
       processMap.put("setGenre", new setGenre());
       processMap.put("getGenre", new getGenre());
       processMap.put("updateDHT", new updateDHT());
@@ -1073,6 +1239,108 @@ public class Node {
       processMap.put("closestPrecedingFinger", new closestPrecedingFinger());
       processMap.put("printFingerTable", new printFingerTable());
       return processMap;
+    }
+
+    public static class setGenreRecursively<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, setGenreRecursively_args, String> {
+      public setGenreRecursively() {
+        super("setGenreRecursively");
+      }
+
+      public setGenreRecursively_args getEmptyArgsInstance() {
+        return new setGenreRecursively_args();
+      }
+
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
+            setGenreRecursively_result result = new setGenreRecursively_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            setGenreRecursively_result result = new setGenreRecursively_result();
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, setGenreRecursively_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.setGenreRecursively(args.bookTitle, args.bookGenre,resultHandler);
+      }
+    }
+
+    public static class getGenreRecursively<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getGenreRecursively_args, String> {
+      public getGenreRecursively() {
+        super("getGenreRecursively");
+      }
+
+      public getGenreRecursively_args getEmptyArgsInstance() {
+        return new getGenreRecursively_args();
+      }
+
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
+            getGenreRecursively_result result = new getGenreRecursively_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getGenreRecursively_result result = new getGenreRecursively_result();
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getGenreRecursively_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.getGenreRecursively(args.bookTitle,resultHandler);
+      }
     }
 
     public static class setGenre<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, setGenre_args, Void> {
@@ -1684,6 +1952,1555 @@ public class Node {
 
       public void start(I iface, printFingerTable_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.printFingerTable(resultHandler);
+      }
+    }
+
+  }
+
+  public static class setGenreRecursively_args implements org.apache.thrift.TBase<setGenreRecursively_args, setGenreRecursively_args._Fields>, java.io.Serializable, Cloneable, Comparable<setGenreRecursively_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setGenreRecursively_args");
+
+    private static final org.apache.thrift.protocol.TField BOOK_TITLE_FIELD_DESC = new org.apache.thrift.protocol.TField("bookTitle", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField BOOK_GENRE_FIELD_DESC = new org.apache.thrift.protocol.TField("bookGenre", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new setGenreRecursively_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new setGenreRecursively_argsTupleSchemeFactory());
+    }
+
+    public String bookTitle; // required
+    public String bookGenre; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      BOOK_TITLE((short)1, "bookTitle"),
+      BOOK_GENRE((short)2, "bookGenre");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // BOOK_TITLE
+            return BOOK_TITLE;
+          case 2: // BOOK_GENRE
+            return BOOK_GENRE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.BOOK_TITLE, new org.apache.thrift.meta_data.FieldMetaData("bookTitle", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.BOOK_GENRE, new org.apache.thrift.meta_data.FieldMetaData("bookGenre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setGenreRecursively_args.class, metaDataMap);
+    }
+
+    public setGenreRecursively_args() {
+    }
+
+    public setGenreRecursively_args(
+      String bookTitle,
+      String bookGenre)
+    {
+      this();
+      this.bookTitle = bookTitle;
+      this.bookGenre = bookGenre;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public setGenreRecursively_args(setGenreRecursively_args other) {
+      if (other.isSetBookTitle()) {
+        this.bookTitle = other.bookTitle;
+      }
+      if (other.isSetBookGenre()) {
+        this.bookGenre = other.bookGenre;
+      }
+    }
+
+    public setGenreRecursively_args deepCopy() {
+      return new setGenreRecursively_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.bookTitle = null;
+      this.bookGenre = null;
+    }
+
+    public String getBookTitle() {
+      return this.bookTitle;
+    }
+
+    public setGenreRecursively_args setBookTitle(String bookTitle) {
+      this.bookTitle = bookTitle;
+      return this;
+    }
+
+    public void unsetBookTitle() {
+      this.bookTitle = null;
+    }
+
+    /** Returns true if field bookTitle is set (has been assigned a value) and false otherwise */
+    public boolean isSetBookTitle() {
+      return this.bookTitle != null;
+    }
+
+    public void setBookTitleIsSet(boolean value) {
+      if (!value) {
+        this.bookTitle = null;
+      }
+    }
+
+    public String getBookGenre() {
+      return this.bookGenre;
+    }
+
+    public setGenreRecursively_args setBookGenre(String bookGenre) {
+      this.bookGenre = bookGenre;
+      return this;
+    }
+
+    public void unsetBookGenre() {
+      this.bookGenre = null;
+    }
+
+    /** Returns true if field bookGenre is set (has been assigned a value) and false otherwise */
+    public boolean isSetBookGenre() {
+      return this.bookGenre != null;
+    }
+
+    public void setBookGenreIsSet(boolean value) {
+      if (!value) {
+        this.bookGenre = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case BOOK_TITLE:
+        if (value == null) {
+          unsetBookTitle();
+        } else {
+          setBookTitle((String)value);
+        }
+        break;
+
+      case BOOK_GENRE:
+        if (value == null) {
+          unsetBookGenre();
+        } else {
+          setBookGenre((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case BOOK_TITLE:
+        return getBookTitle();
+
+      case BOOK_GENRE:
+        return getBookGenre();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case BOOK_TITLE:
+        return isSetBookTitle();
+      case BOOK_GENRE:
+        return isSetBookGenre();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof setGenreRecursively_args)
+        return this.equals((setGenreRecursively_args)that);
+      return false;
+    }
+
+    public boolean equals(setGenreRecursively_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_bookTitle = true && this.isSetBookTitle();
+      boolean that_present_bookTitle = true && that.isSetBookTitle();
+      if (this_present_bookTitle || that_present_bookTitle) {
+        if (!(this_present_bookTitle && that_present_bookTitle))
+          return false;
+        if (!this.bookTitle.equals(that.bookTitle))
+          return false;
+      }
+
+      boolean this_present_bookGenre = true && this.isSetBookGenre();
+      boolean that_present_bookGenre = true && that.isSetBookGenre();
+      if (this_present_bookGenre || that_present_bookGenre) {
+        if (!(this_present_bookGenre && that_present_bookGenre))
+          return false;
+        if (!this.bookGenre.equals(that.bookGenre))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_bookTitle = true && (isSetBookTitle());
+      list.add(present_bookTitle);
+      if (present_bookTitle)
+        list.add(bookTitle);
+
+      boolean present_bookGenre = true && (isSetBookGenre());
+      list.add(present_bookGenre);
+      if (present_bookGenre)
+        list.add(bookGenre);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(setGenreRecursively_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetBookTitle()).compareTo(other.isSetBookTitle());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetBookTitle()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.bookTitle, other.bookTitle);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetBookGenre()).compareTo(other.isSetBookGenre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetBookGenre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.bookGenre, other.bookGenre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("setGenreRecursively_args(");
+      boolean first = true;
+
+      sb.append("bookTitle:");
+      if (this.bookTitle == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.bookTitle);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("bookGenre:");
+      if (this.bookGenre == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.bookGenre);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class setGenreRecursively_argsStandardSchemeFactory implements SchemeFactory {
+      public setGenreRecursively_argsStandardScheme getScheme() {
+        return new setGenreRecursively_argsStandardScheme();
+      }
+    }
+
+    private static class setGenreRecursively_argsStandardScheme extends StandardScheme<setGenreRecursively_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, setGenreRecursively_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // BOOK_TITLE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.bookTitle = iprot.readString();
+                struct.setBookTitleIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // BOOK_GENRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.bookGenre = iprot.readString();
+                struct.setBookGenreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, setGenreRecursively_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.bookTitle != null) {
+          oprot.writeFieldBegin(BOOK_TITLE_FIELD_DESC);
+          oprot.writeString(struct.bookTitle);
+          oprot.writeFieldEnd();
+        }
+        if (struct.bookGenre != null) {
+          oprot.writeFieldBegin(BOOK_GENRE_FIELD_DESC);
+          oprot.writeString(struct.bookGenre);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class setGenreRecursively_argsTupleSchemeFactory implements SchemeFactory {
+      public setGenreRecursively_argsTupleScheme getScheme() {
+        return new setGenreRecursively_argsTupleScheme();
+      }
+    }
+
+    private static class setGenreRecursively_argsTupleScheme extends TupleScheme<setGenreRecursively_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, setGenreRecursively_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetBookTitle()) {
+          optionals.set(0);
+        }
+        if (struct.isSetBookGenre()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetBookTitle()) {
+          oprot.writeString(struct.bookTitle);
+        }
+        if (struct.isSetBookGenre()) {
+          oprot.writeString(struct.bookGenre);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, setGenreRecursively_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.bookTitle = iprot.readString();
+          struct.setBookTitleIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.bookGenre = iprot.readString();
+          struct.setBookGenreIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class setGenreRecursively_result implements org.apache.thrift.TBase<setGenreRecursively_result, setGenreRecursively_result._Fields>, java.io.Serializable, Cloneable, Comparable<setGenreRecursively_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setGenreRecursively_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new setGenreRecursively_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new setGenreRecursively_resultTupleSchemeFactory());
+    }
+
+    public String success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setGenreRecursively_result.class, metaDataMap);
+    }
+
+    public setGenreRecursively_result() {
+    }
+
+    public setGenreRecursively_result(
+      String success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public setGenreRecursively_result(setGenreRecursively_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+    }
+
+    public setGenreRecursively_result deepCopy() {
+      return new setGenreRecursively_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public setGenreRecursively_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof setGenreRecursively_result)
+        return this.equals((setGenreRecursively_result)that);
+      return false;
+    }
+
+    public boolean equals(setGenreRecursively_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_success = true && (isSetSuccess());
+      list.add(present_success);
+      if (present_success)
+        list.add(success);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(setGenreRecursively_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("setGenreRecursively_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class setGenreRecursively_resultStandardSchemeFactory implements SchemeFactory {
+      public setGenreRecursively_resultStandardScheme getScheme() {
+        return new setGenreRecursively_resultStandardScheme();
+      }
+    }
+
+    private static class setGenreRecursively_resultStandardScheme extends StandardScheme<setGenreRecursively_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, setGenreRecursively_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, setGenreRecursively_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class setGenreRecursively_resultTupleSchemeFactory implements SchemeFactory {
+      public setGenreRecursively_resultTupleScheme getScheme() {
+        return new setGenreRecursively_resultTupleScheme();
+      }
+    }
+
+    private static class setGenreRecursively_resultTupleScheme extends TupleScheme<setGenreRecursively_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, setGenreRecursively_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, setGenreRecursively_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getGenreRecursively_args implements org.apache.thrift.TBase<getGenreRecursively_args, getGenreRecursively_args._Fields>, java.io.Serializable, Cloneable, Comparable<getGenreRecursively_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGenreRecursively_args");
+
+    private static final org.apache.thrift.protocol.TField BOOK_TITLE_FIELD_DESC = new org.apache.thrift.protocol.TField("bookTitle", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getGenreRecursively_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getGenreRecursively_argsTupleSchemeFactory());
+    }
+
+    public String bookTitle; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      BOOK_TITLE((short)1, "bookTitle");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // BOOK_TITLE
+            return BOOK_TITLE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.BOOK_TITLE, new org.apache.thrift.meta_data.FieldMetaData("bookTitle", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGenreRecursively_args.class, metaDataMap);
+    }
+
+    public getGenreRecursively_args() {
+    }
+
+    public getGenreRecursively_args(
+      String bookTitle)
+    {
+      this();
+      this.bookTitle = bookTitle;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getGenreRecursively_args(getGenreRecursively_args other) {
+      if (other.isSetBookTitle()) {
+        this.bookTitle = other.bookTitle;
+      }
+    }
+
+    public getGenreRecursively_args deepCopy() {
+      return new getGenreRecursively_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.bookTitle = null;
+    }
+
+    public String getBookTitle() {
+      return this.bookTitle;
+    }
+
+    public getGenreRecursively_args setBookTitle(String bookTitle) {
+      this.bookTitle = bookTitle;
+      return this;
+    }
+
+    public void unsetBookTitle() {
+      this.bookTitle = null;
+    }
+
+    /** Returns true if field bookTitle is set (has been assigned a value) and false otherwise */
+    public boolean isSetBookTitle() {
+      return this.bookTitle != null;
+    }
+
+    public void setBookTitleIsSet(boolean value) {
+      if (!value) {
+        this.bookTitle = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case BOOK_TITLE:
+        if (value == null) {
+          unsetBookTitle();
+        } else {
+          setBookTitle((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case BOOK_TITLE:
+        return getBookTitle();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case BOOK_TITLE:
+        return isSetBookTitle();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getGenreRecursively_args)
+        return this.equals((getGenreRecursively_args)that);
+      return false;
+    }
+
+    public boolean equals(getGenreRecursively_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_bookTitle = true && this.isSetBookTitle();
+      boolean that_present_bookTitle = true && that.isSetBookTitle();
+      if (this_present_bookTitle || that_present_bookTitle) {
+        if (!(this_present_bookTitle && that_present_bookTitle))
+          return false;
+        if (!this.bookTitle.equals(that.bookTitle))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_bookTitle = true && (isSetBookTitle());
+      list.add(present_bookTitle);
+      if (present_bookTitle)
+        list.add(bookTitle);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(getGenreRecursively_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetBookTitle()).compareTo(other.isSetBookTitle());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetBookTitle()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.bookTitle, other.bookTitle);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getGenreRecursively_args(");
+      boolean first = true;
+
+      sb.append("bookTitle:");
+      if (this.bookTitle == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.bookTitle);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getGenreRecursively_argsStandardSchemeFactory implements SchemeFactory {
+      public getGenreRecursively_argsStandardScheme getScheme() {
+        return new getGenreRecursively_argsStandardScheme();
+      }
+    }
+
+    private static class getGenreRecursively_argsStandardScheme extends StandardScheme<getGenreRecursively_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getGenreRecursively_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // BOOK_TITLE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.bookTitle = iprot.readString();
+                struct.setBookTitleIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getGenreRecursively_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.bookTitle != null) {
+          oprot.writeFieldBegin(BOOK_TITLE_FIELD_DESC);
+          oprot.writeString(struct.bookTitle);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getGenreRecursively_argsTupleSchemeFactory implements SchemeFactory {
+      public getGenreRecursively_argsTupleScheme getScheme() {
+        return new getGenreRecursively_argsTupleScheme();
+      }
+    }
+
+    private static class getGenreRecursively_argsTupleScheme extends TupleScheme<getGenreRecursively_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getGenreRecursively_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetBookTitle()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetBookTitle()) {
+          oprot.writeString(struct.bookTitle);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getGenreRecursively_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.bookTitle = iprot.readString();
+          struct.setBookTitleIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getGenreRecursively_result implements org.apache.thrift.TBase<getGenreRecursively_result, getGenreRecursively_result._Fields>, java.io.Serializable, Cloneable, Comparable<getGenreRecursively_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGenreRecursively_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getGenreRecursively_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getGenreRecursively_resultTupleSchemeFactory());
+    }
+
+    public String success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGenreRecursively_result.class, metaDataMap);
+    }
+
+    public getGenreRecursively_result() {
+    }
+
+    public getGenreRecursively_result(
+      String success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getGenreRecursively_result(getGenreRecursively_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+    }
+
+    public getGenreRecursively_result deepCopy() {
+      return new getGenreRecursively_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public getGenreRecursively_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getGenreRecursively_result)
+        return this.equals((getGenreRecursively_result)that);
+      return false;
+    }
+
+    public boolean equals(getGenreRecursively_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_success = true && (isSetSuccess());
+      list.add(present_success);
+      if (present_success)
+        list.add(success);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(getGenreRecursively_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getGenreRecursively_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getGenreRecursively_resultStandardSchemeFactory implements SchemeFactory {
+      public getGenreRecursively_resultStandardScheme getScheme() {
+        return new getGenreRecursively_resultStandardScheme();
+      }
+    }
+
+    private static class getGenreRecursively_resultStandardScheme extends StandardScheme<getGenreRecursively_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getGenreRecursively_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getGenreRecursively_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getGenreRecursively_resultTupleSchemeFactory implements SchemeFactory {
+      public getGenreRecursively_resultTupleScheme getScheme() {
+        return new getGenreRecursively_resultTupleScheme();
+      }
+    }
+
+    private static class getGenreRecursively_resultTupleScheme extends TupleScheme<getGenreRecursively_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getGenreRecursively_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getGenreRecursively_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
       }
     }
 

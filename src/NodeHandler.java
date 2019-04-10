@@ -8,8 +8,7 @@ import org.apache.thrift.transport.*;
 
 
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class NodeHandler implements Node.Iface {
 
@@ -21,6 +20,69 @@ public class NodeHandler implements Node.Iface {
     private FingerTable[] fingers;
     private static Map<String, String> bookGenreMap= new HashMap<String, String>();
     private static HashService hashService;
+
+
+    @Override
+    public String setGenreRecursively(String bookTitle, String bookGenre) throws TException{
+        System.out.println("Trying to set the genre at this node : " + self.toString());
+        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+
+        String result = "";
+
+        Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
+
+        if(destNode.getHashID() == self.getHashID()){
+            System.out.println("Node responsible for insert : "+ self.hostname);
+            bookGenreMap.put(bookTitle, bookGenre);
+        }else{
+            try {
+                TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
+                TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+                Node.Client closestPreceedingClient = new Node.Client(nodeProtocol);
+                System.out.println("Node is trying to connect to the destination node." + destNode.toString());
+                nodeTransport.open();
+                result = closestPreceedingClient.setGenreRecursively(bookTitle, bookGenre);
+                nodeTransport.close();
+            } catch (Exception e) {
+                System.out.println("Could not insert book genre into new node") ;
+                e.printStackTrace();
+            }
+        }
+        return result + ", " + self.toString();
+    }
+
+    @Override
+    public String getGenreRecursively(String bookTitle) throws TException{
+
+        System.out.println("Trying to get the genre at this node : " + self.toString());
+        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+        String result = "";
+        Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
+        if(destNode.getHashID() == self.getHashID()){
+            System.out.println("Node responsible for insert : "+ self.hostname);
+            result = bookGenreMap.get(bookTitle);
+        }else{
+            try {
+                TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
+                TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+                Node.Client closestPreceedingClient = new Node.Client(nodeProtocol);
+                System.out.println("Node is trying to connect to the destination node." + destNode.toString());
+                nodeTransport.open();
+                result = closestPreceedingClient.getGenreRecursively(bookTitle);
+                nodeTransport.close();
+            } catch (Exception e) {
+                System.out.println("Could not insert book genre into new node") ;
+                e.printStackTrace();
+            }
+        }
+        return result + ", " + self.toString();
+
+    }
+
+
+
+
+
     @Override
     public void setGenre(String bookTitle, String bookGenre) throws TException {
         System.out.println("Trying to set the genre at this node : " + self.toString());
@@ -47,6 +109,8 @@ public class NodeHandler implements Node.Iface {
 
     @Override
     public String getGenre(String bookTitle) throws TException {
+        List<String> hops = new ArrayList<String>();
+
        System.out.println("Trying to get book genre from this node "+ self.toString());
         System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
        Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));

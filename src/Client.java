@@ -72,13 +72,13 @@ public class Client {
                 if(command.toLowerCase().equals("get")) {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
-                    System.out.println("The genre of " + bookTitle + " is " + node.getGenre(bookTitle));
+                    System.out.println("The genre of " + bookTitle + " is " + node.getGenreRecursively(bookTitle));
                 } else if(command.toLowerCase().equals("set")) {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
                     System.out.print("Enter book genre > ");
                     String bookGenre = inp.nextLine();
-                    node.setGenre(bookTitle, bookGenre);
+                    node.setGenreRecursively(bookTitle, bookGenre);
                     System.out.println("Title set.");
                 } else if(command.toLowerCase().equals("finger")){
                     node.printFingerTable();
@@ -103,8 +103,8 @@ public class Client {
                     String line;
                     int success = 0, lines = 0;
                     while((line = file.readLine()) != null) {
-                        String[] book = line.split(",");
-                        node.setGenre(book[0], book[1]);
+                        String[] book = line.split(":");
+                        node.setGenreRecursively(book[0], book[1]);
                         if(book[1].equals(node.getGenre(book[0])))
                             ++success;
                         else

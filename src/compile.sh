@@ -4,4 +4,4 @@ javac -cp ".:/usr/local/Thrift/*" Client.java -d .
 
 
 
-java -cp ".:/usr/local/Thrift/*" SuperNodeServer 1729 9
+java -cp ".:/usr/local/Thrift/*" SuperNodeServer 1729 5
