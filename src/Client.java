@@ -4,7 +4,9 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Scanner;
 
 public class Client {
@@ -78,6 +80,26 @@ public class Client {
                     System.out.println("Title set.");
                 } else if(command.toLowerCase().equals("finger")){
                     node.printFingerTable();
+                } else if(command.toLowerCase().equals("file")) {
+                    System.out.println("Enter filename > ");
+                    String filename = inp.nextLine();
+                    BufferedReader file = new BufferedReader(new FileReader(filename));
+                    String line;
+                    int success = 0, lines = 0;
+                    while((line = file.readLine()) != null) {
+                        String[] book = line.split(",");
+                        node.setGenre(book[0], book[1]);
+                        if(book[1].equals(node.getGenre(book[0])))
+                            ++success;
+                        else
+                            System.out.println("The book " + book[0] + ", " + book[1] + " could not be set correctly.");
+                        ++lines;
+                    }
+                    file.close();
+                    if(success == lines)
+                        System.out.println("All " + lines + "/" + success + " books were set correctly");
+                    else
+                        System.out.println("Only " + success + "/" + " books were set correctly.");
                 } else {
                     System.out.println("Could not understand command. Please try again.");
                 }
