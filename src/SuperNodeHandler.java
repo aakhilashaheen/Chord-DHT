@@ -97,8 +97,13 @@ public class SuperNodeHandler implements SuperNode.Iface {
         }
 
         System.out.println("Inside getNode");
-        int index = (int)(Math.random() * (activeNodes.size()));
-        return activeNodes.get(index).toString();
+//        int index = (int)(Math.random() * (activeNodes.size()));
+//        return activeNodes.get(index).toString();
+        String nodes = "";
+        for(Machine m : activeNodes) {
+            nodes += m.toString() + "#";
+        }
+        return nodes;
     }
 
     public Machine getNodePrev(int id){
