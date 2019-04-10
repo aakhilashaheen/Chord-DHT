@@ -61,7 +61,9 @@ public class Client {
             }
 
             System.out.println("Contacted node at " + nodeAddress.hostname + ":" + nodeAddress.port);
-            System.out.println("\n\n -------- Welcome to the Terminal for book look up --------\n\n");
+            System.out.println("\n\n -------- Welcome to the Terminal for book look up --------\n" +
+                    "Choose one of get, set, finger or file.\n\n");
+
 
             Scanner inp = new Scanner(System.in);
 
@@ -72,8 +74,11 @@ public class Client {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
                     String[] results = node.getGenreRecursively(bookTitle).split("##");
-                    System.out.println("The genre of " + bookTitle + " is " + results[0]);
-                    for(int i = 0; i < results.length; ++i)
+                    if(results[0].equals("BOOK_NOT_FOUND"))
+                        System.out.println("Book not found.");
+                    else
+                        System.out.println("The genre of " + bookTitle + " is " + results[0]);
+                    for(int i = 1; i < results.length; ++i)
                         if(!results[i].isEmpty())
                             System.out.println("Found via " + results[i]);
                 } else if(command.toLowerCase().equals("set")) {
@@ -111,7 +116,7 @@ public class Client {
                         String[] book = line.split(":");
                         node.setGenreRecursively(book[0], book[1]);
                         String result = node.getGenreRecursively(book[0]).split("##")[0];
-                        if(book[1].equals(node.getGenre(result)))
+                        if(book[1].equals(result))
                             ++success;
                         else
                             System.out.println("The book " + book[0] + ", " + book[1] + " could not be set correctly.");
