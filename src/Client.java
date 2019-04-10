@@ -11,9 +11,10 @@ import java.util.Scanner;
 
 public class Client {
 
-    TTransport serverTransport, nodeTransport;
-    SuperNode.Client superNode;
+    static TTransport serverTransport, nodeTransport;
+    static SuperNode.Client superNode;
     static Node.Client node;
+    static String activeNodes;
 
     public Client(Machine server) {
         serverTransport = new TSocket(server.hostname, server.port);
@@ -26,7 +27,8 @@ public class Client {
             System.out.println("Connected to server");
             TProtocol serverProtocol = new TBinaryProtocol(serverTransport);
             superNode = new SuperNode.Client(serverProtocol);
-            Machine nodeAddress = new Machine(superNode.getNode());
+            activeNodes = superNode.getNode();
+            Machine nodeAddress = new Machine(activeNodes.split("#")[0]);
             System.out.println("Address received" + nodeAddress.toString());
             serverTransport.close();
             System.out.println("Server connection closed.");
@@ -80,6 +82,20 @@ public class Client {
                     System.out.println("Title set.");
                 } else if(command.toLowerCase().equals("finger")){
                     node.printFingerTable();
+                    String[] nodes = activeNodes.split("#");
+                    for(int i = 1; i < nodes.length; ++i) {
+                        if(nodes[i].isEmpty())
+                            continue;
+                        Machine thisNode = new Machine(nodes[i]);
+                        TTransport tempTransport = new TSocket(thisNode.hostname, thisNode.port);
+                        TProtocol tempProtocol = new TBinaryProtocol(tempTransport);
+                        tempTransport.open();
+                        Node.Client tempClient = new Node.Client(tempProtocol);
+                        tempClient.printFingerTable();
+                        tempTransport.close();
+
+                    }
+
                 } else if(command.toLowerCase().equals("file")) {
                     System.out.println("Enter filename > ");
                     String filename = inp.nextLine();
