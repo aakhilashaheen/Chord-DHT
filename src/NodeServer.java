@@ -2,8 +2,8 @@ import java.net.InetAddress;
 
 public class NodeServer {
     public static void main(String[] args) {
-        if(args.length < 3) {
-            System.err.println("Usage: java NodeHandler1 <superNodeIP> <superNodePort> <port>");
+        if(args.length < 4) {
+            System.err.println("Usage: java NodeHandler1 <superNodeIP> <superNodePort> <port> <maxNodes>");
             return;
         }
         try {
@@ -12,7 +12,8 @@ public class NodeServer {
             Integer superNodePort = Integer.parseInt(args[1]);
             //port number used by this node.
             Integer port = Integer.parseInt(args[2]);
-            NodeHandler node = new NodeHandler(superNodeIP, superNodePort, port);
+            Integer maxNodes = Integer.parseInt(args[3]);
+            NodeHandler node = new NodeHandler(superNodeIP, superNodePort, port,maxNodes);
         }
         catch(Exception e) {
             e.printStackTrace();

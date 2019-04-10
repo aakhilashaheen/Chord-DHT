@@ -10,84 +10,90 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SuperNodeHandler implements SuperNode.Iface {
 
     private boolean joinInProgress = false;
-    private int maxNodes = 5;
+    private int keySpace ;
     private List<Machine> activeNodes = new ArrayList<>();
     private List<Integer> assignedIds = new ArrayList<>();
-    private HashService hashService = new HashService(maxNodes);
-    int numberOfNodesInTheSystem = 0;
-    int[] indexes = new int[]{16,3,11,4,23};
+    private HashService hashService;
+    private int port;
+    private int maxNodes;
 
     String nodeList = "";
 
+
+    public SuperNodeHandler(int port, int maxNodes){
+        this.maxNodes = maxNodes;
+        this.port = port;
+        this.hashService = new HashService(maxNodes);
+        int minFingerTableSizeNeeded = (int) Math.ceil(Math.log(maxNodes) / Math.log(2));
+        this.keySpace = (int) Math.pow(2,minFingerTableSizeNeeded);
+    }
 
 
     @Override
     public String join(String hostname, int port) throws TException {
 
-        if(joinInProgress)
-            return "NACK";
-        else
-            joinInProgress = true;
-
-        System.out.println("Received request from a node to join the DHT" + hostname + port);
-        Machine m = new Machine(hostname, port);
-        int uniqueHashId = hashService.hash(m.toString());
-        while(assignedIds.contains(uniqueHashId)){
-            System.out.println("This uniqueHashId has already been used" +uniqueHashId);
-            uniqueHashId = uniqueHashId + 1;
-            uniqueHashId = uniqueHashId % 8;
-        }
-        /*Set nodehashes explicitly
-
-         */
-//
-//        uniqueHashId = indexes[numberOfNodesInTheSystem];
-//        numberOfNodesInTheSystem++;
-
-        m.setHashID(uniqueHashId);
-        activeNodes.add(m);
-        assignedIds.add(uniqueHashId);
-
-        Collections.sort(assignedIds);
-
-        int predID = uniqueHashId;
-        Iterator<Integer> iterator = assignedIds.iterator();
-        while (iterator.hasNext()) {
-            int next = iterator.next();
-            if (next < predID) {
-                predID = next;
-                break;
+        if(!joinInProgress) {
+            synchronized (this){
+                joinInProgress = true;
             }
-        }
-        if (predID == uniqueHashId)
-            predID = Collections.max(assignedIds);
+            System.out.println("Received join request from : " + hostname + port);
+            Machine m = new Machine(hostname, port);
+            int keyForNode = hashService.hash(m.toString());
+            while(assignedIds.contains(keyForNode)){
+                System.out.println("This key has already been used" + keyForNode);
+                keyForNode = keyForNode + 1;
+                keyForNode = keyForNode % keySpace;
+            }
+            m.setHashID(keyForNode);
+            assignedIds.add(keyForNode);
+            Collections.sort(assignedIds);
 
-        Machine prev = getNodePrev(predID);
-        if(prev == null)
-            return "FALSE";
-        nodeList += m.toString() + ",";
-        System.out.println(nodeList);
-        return  uniqueHashId+ "#" + prev.toString();
+            int predID = keyForNode;
+            Iterator<Integer> iterator = assignedIds.iterator();
+            while (iterator.hasNext()) {
+                int next = iterator.next();
+                if (next < predID) {
+                    predID = next;
+                    break;
+                }
+            }
+            if (predID == keyForNode)
+                predID = Collections.max(assignedIds);
+
+            Machine prev = getNodePrev(predID);
+            if(prev == null)
+                return "FALSE";
+            nodeList += m.toString() + " , ";
+            System.out.println(nodeList);
+            return  keyForNode+ "#" + prev.toString();
+
+        }else{
+            return "NACK";
+        }
+
+
 
     }
 
     @Override
-    public String postJoin(String hostname, int port) throws TException {
+    public String postJoin(String machine) throws TException {
 
-        Collections.sort(assignedIds,Collections.reverseOrder());
-        for(int i = 0 ;i < assignedIds.size() ; i ++){
-
-
+        synchronized (this) {
+            joinInProgress = false;
+            activeNodes.add(new Machine(machine));
         }
-        joinInProgress = false;
 
         return "Success";
     }
 
     @Override
     public String getNode() throws TException {
+        if(activeNodes.size() != maxNodes){
+            System.out.println("DHT hasn't formed yet!");
+            return null;
+        }
+
         System.out.println("Inside getNode");
-        // TODO: Make this random
         int index = (int)(Math.random() * (activeNodes.size()));
         return activeNodes.get(index).toString();
     }

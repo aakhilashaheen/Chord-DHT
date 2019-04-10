@@ -16,7 +16,7 @@ public class NodeHandler implements Node.Iface {
     private Machine self = null;
     private Machine predecessor = null;
     private int nodeKey = 0;
-    int m;
+    int fingerTableSize;
     int keySpace;
     private FingerTable[] fingers;
     private static Map<String, String> bookGenreMap= new HashMap<String, String>();
@@ -271,10 +271,9 @@ public class NodeHandler implements Node.Iface {
         }
         return self.toString();
     }
-    public NodeHandler(String superNodeIP, Integer superNodePort, Integer port) throws Exception {
-        int maxNodes = 5;
-        m = (int) Math.ceil(Math.log(maxNodes) / Math.log(2));
-        keySpace = (int) Math.pow(2,m);
+    public NodeHandler(String superNodeIP, Integer superNodePort, Integer port, Integer maxNodes) throws Exception {
+        fingerTableSize = (int) Math.ceil(Math.log(maxNodes) / Math.log(2));
+        keySpace = (int) Math.pow(2,fingerTableSize);
         // connect to the supernode as a client
         TTransport superNodeTransport = new TSocket(superNodeIP, superNodePort);
         TProtocol superNodeProtocol = new TBinaryProtocol(superNodeTransport);
@@ -299,21 +298,21 @@ public class NodeHandler implements Node.Iface {
         self = new Machine(InetAddress.getLocalHost().getHostName(), port, Integer.valueOf(info[0]));
         nodeKey = Integer.valueOf(info[0]);
         predecessor = new Machine(info[1]);
-        fingers = new FingerTable[m];
+        fingers = new FingerTable[fingerTableSize];
 
 
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < fingerTableSize; i++) {
             int intervalStart = (nodeKey + (int) Math.pow(2, i)) % keySpace;
             fingers[i] = new FingerTable();
             fingers[i].setIntervalStart(intervalStart);
         }
-        for (int i = 0; i < m - 1; i++) {
+        for (int i = 0; i < fingerTableSize - 1; i++) {
             fingers[i].setIntervalEnd(fingers[i + 1].getIntervalStart());
         }
-        fingers[m - 1].setIntervalEnd(fingers[0].getIntervalStart());
+        fingers[fingerTableSize - 1].setIntervalEnd(fingers[0].getIntervalStart());
         //First node in the ring
         if(self.getHashID() == predecessor.getHashID()){
-            for(int i = 0 ; i < m ; i ++){
+            for(int i = 0 ; i < fingerTableSize ; i ++){
                 fingers[i].setSuccessor(self);
             }
         }else{
@@ -324,7 +323,7 @@ public class NodeHandler implements Node.Iface {
         }
 
         // call post join after all DHTs are updated.
-        if (!superNode.postJoin(self.hostname, self.port).equals("Success"))
+        if (!superNode.postJoin(self.toString()).equals("Success"))
             System.err.println("Machine(" + self.getHashID() + ") Could not perform postJoin call.");
 
         superNodeTransport.close();
@@ -346,7 +345,7 @@ public class NodeHandler implements Node.Iface {
         System.out.println("initFingerTable called using startNode : " + startNode);
         //Populate all the fingerTable with default values
 
-            for (int i = 0; i < m; i++) {
+            for (int i = 0; i < fingerTableSize; i++) {
                 fingers[i].setSuccessor(self);
             }
             predecessor = startNode;
@@ -390,7 +389,7 @@ public class NodeHandler implements Node.Iface {
             }
             int normalInterval = 1;
             //Find successors of all the other entries in the fingerTable
-            for (int i = 0; i < m - 1; i++) {
+            for (int i = 0; i < fingerTableSize - 1; i++) {
                 int myId = nodeKey;
                 int nextId = fingers[i].getSuccessor().getHashID();
 
@@ -445,7 +444,7 @@ public class NodeHandler implements Node.Iface {
 
 
     public void printFingerTable() {
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < fingerTableSize; i++) {
             System.out.println(fingers[i].getIntervalStart() + "|" + fingers[i].getIntervalEnd() + "|" + fingers[i].getSuccessor().toString());
         }
     }
