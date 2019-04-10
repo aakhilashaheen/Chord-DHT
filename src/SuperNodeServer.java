@@ -18,7 +18,7 @@ public class SuperNodeServer {
             //TTransportFactory factory = new TFramedTransport.Factory();
 
             //Create service request handler
-            SuperNodeHandler handler = new SuperNodeHandler();
+            SuperNodeHandler handler = new SuperNodeHandler(Integer.parseInt(arg[0]), Integer.parseInt(arg[1]));
             SuperNode.Processor processor = new SuperNode.Processor(handler);
 
             //Run server as a single thread
