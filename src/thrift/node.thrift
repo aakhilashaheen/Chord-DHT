@@ -9,5 +9,6 @@ service Node {
     bool updateFingerTable(1: string node, 2: i32 index),
     string getPredecessor(),
     string getSuccessor(),
-    string closestPrecedingFinger(1: i32 key)
+    string closestPrecedingFinger(1: i32 key),
+    void printFingerTable()
 }
