@@ -60,9 +60,10 @@ public class NodeHandler implements Node.Iface {
         Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
         if(destNode.getHashID() == self.getHashID()){
             System.out.println("Node responsible for insert : "+ self.hostname);
-            result = bookGenreMap.get(bookTitle);
-            if(result.isEmpty())
+            if(!bookGenreMap.containsKey(bookTitle))
                 result = "BOOK_NOT_FOUND";
+            else
+                result = bookGenreMap.get(bookTitle);
         }else{
             try {
                 TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
