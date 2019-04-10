@@ -83,6 +83,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         synchronized (this) {
             joinInProgress = false;
             currentNumberOfNodesIntheSystem = activeNodes.size();
+            System.out.println("Current nodes in the system" +currentNumberOfNodesIntheSystem);
         }
 
         return "Success";
@@ -90,8 +91,8 @@ public class SuperNodeHandler implements SuperNode.Iface {
 
     @Override
     public String getNode() throws TException {
-        if(activeNodes.size() != maxNodes){
-            System.out.println("DHT hasn't formed yet!");
+        if(currentNumberOfNodesIntheSystem != maxNodes){
+            System.out.println("DHT hasn't formed yet!" + currentNumberOfNodesIntheSystem + maxNodes);
             return null;
         }
 
