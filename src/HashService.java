@@ -20,7 +20,7 @@ public class HashService {
         digest.update(toHash.getBytes());
         byte[] array = digest.digest();
 
-        int hashValue =	Math.abs(new BigInteger(array).intValue() % maxNodes);
+        int hashValue =	Math.abs(new BigInteger(array).intValue() % 8);
         return hashValue;
     }
 

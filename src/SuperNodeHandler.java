@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SuperNodeHandler implements SuperNode.Iface {
 
     private boolean joinInProgress = false;
-    private int maxNodes = 32;
+    private int maxNodes = 5;
     private List<Machine> activeNodes = new ArrayList<>();
     private List<Integer> assignedIds = new ArrayList<>();
     private HashService hashService = new HashService(maxNodes);
@@ -35,7 +35,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         while(assignedIds.contains(uniqueHashId)){
             System.out.println("This uniqueHashId has already been used" +uniqueHashId);
             uniqueHashId = uniqueHashId + 1;
-            uniqueHashId = uniqueHashId % maxNodes;
+            uniqueHashId = uniqueHashId % 8;
         }
         /*Set nodehashes explicitly
 

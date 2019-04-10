@@ -14,7 +14,7 @@ public class SuperNodeServer {
                 return;
             }
             //Create Thrift server socket
-            TServerTransport serverTransport = new TServerSocket(5000);
+            TServerTransport serverTransport = new TServerSocket(1729);
 
             //Create service request handler
             SuperNodeHandler handler = new SuperNodeHandler();

@@ -14,8 +14,8 @@ public class NodeHandler implements Node.Iface {
     private Machine self = null;
     private Machine predecessor = null;
     private int nodeKey = 0;
-    int keySpace = 32;
-    int maxNodes = 5;
+    int m;
+    int keySpace;
     private FingerTable[] fingers;
 
     @Override
@@ -157,10 +157,9 @@ public class NodeHandler implements Node.Iface {
     @Override
     public boolean updateFingerTable(String node, int index) throws TException {
         System.out.println("UpdateFingerTable called for node:" + node + " and index: " + index);
-        Machine pred;
         int normalInterval = 1;
         int myId = nodeKey;
-        int nextId = fingers[0].getSuccessor().getHashID();
+        int nextId = fingers[index].getSuccessor().getHashID();
         if (myId >= nextId)
             normalInterval = 0;
 
@@ -169,11 +168,8 @@ public class NodeHandler implements Node.Iface {
         if (((normalInterval == 1 && (s.getHashID() >= myId && s.getHashID() < nextId))
                 || (normalInterval == 0 && (s.getHashID() >= myId || s.getHashID() < nextId))) && (nodeKey != s.getHashID())) {
             fingers[index].setSuccessor(s);
+            printFingerTable();
 
-//            if (predecessor.getHashID() == s.getHashID()){
-//                printFingerTable();
-//                return true;
-//            }
             try {
                 if (predecessor.getHashID() != s.getHashID()) {
                     TTransport nodeTransport = new TSocket(predecessor.hostname, predecessor.port);
@@ -183,6 +179,7 @@ public class NodeHandler implements Node.Iface {
                     nodeTransport.open();
                     updateFingerTableClient.updateFingerTable(s.toString(), index);
                     nodeTransport.close();
+
                 }
             } catch (Exception e) {
                 System.out.println("Could not update the finger table");
@@ -191,7 +188,7 @@ public class NodeHandler implements Node.Iface {
 
 
         }
-        printFingerTable();
+
         return true;
     }
 
@@ -230,7 +227,9 @@ public class NodeHandler implements Node.Iface {
         return self.toString();
     }
     public NodeHandler(String superNodeIP, Integer superNodePort, Integer port) throws Exception {
-
+        int maxNodes = 5;
+        m = (int) Math.ceil(Math.log(maxNodes) / Math.log(2));
+        keySpace = (int) Math.pow(2,m);
         // connect to the supernode as a client
         TTransport superNodeTransport = new TSocket(superNodeIP, superNodePort);
         TProtocol superNodeProtocol = new TBinaryProtocol(superNodeTransport);
@@ -255,21 +254,21 @@ public class NodeHandler implements Node.Iface {
         self = new Machine(InetAddress.getLocalHost().getHostName(), port, Integer.valueOf(info[0]));
         nodeKey = Integer.valueOf(info[0]);
         predecessor = new Machine(info[1]);
-        fingers = new FingerTable[maxNodes];
+        fingers = new FingerTable[m];
 
 
-        for (int i = 0; i < maxNodes; i++) {
+        for (int i = 0; i < m; i++) {
             int intervalStart = (nodeKey + (int) Math.pow(2, i)) % keySpace;
             fingers[i] = new FingerTable();
             fingers[i].setIntervalStart(intervalStart);
         }
-        for (int i = 0; i < maxNodes - 1; i++) {
+        for (int i = 0; i < m - 1; i++) {
             fingers[i].setIntervalEnd(fingers[i + 1].getIntervalStart());
         }
-        fingers[maxNodes - 1].setIntervalEnd(fingers[0].getIntervalStart());
+        fingers[m - 1].setIntervalEnd(fingers[0].getIntervalStart());
         //First node in the ring
         if(self.getHashID() == predecessor.getHashID()){
-            for(int i = 0 ; i < maxNodes ; i ++){
+            for(int i = 0 ; i < m ; i ++){
                 fingers[i].setSuccessor(self);
             }
         }else{
@@ -302,7 +301,7 @@ public class NodeHandler implements Node.Iface {
         System.out.println("initFingerTable called using startNode : " + startNode);
         //Populate all the fingerTable with default values
 
-            for (int i = 0; i < maxNodes; i++) {
+            for (int i = 0; i < m; i++) {
                 fingers[i].setSuccessor(self);
             }
             predecessor = startNode;
@@ -346,7 +345,7 @@ public class NodeHandler implements Node.Iface {
             }
             int normalInterval = 1;
             //Find successors of all the other entries in the fingerTable
-            for (int i = 0; i < maxNodes - 1; i++) {
+            for (int i = 0; i < m - 1; i++) {
                 int myId = nodeKey;
                 int nextId = fingers[i].getSuccessor().getHashID();
 
@@ -401,7 +400,7 @@ public class NodeHandler implements Node.Iface {
 
 
     public void printFingerTable() {
-        for (int i = 0; i < maxNodes; i++) {
+        for (int i = 0; i < m; i++) {
             System.out.println(fingers[i].getIntervalStart() + "|" + fingers[i].getIntervalEnd() + "|" + fingers[i].getSuccessor().toString());
         }
     }
@@ -411,16 +410,18 @@ public class NodeHandler implements Node.Iface {
         System.out.println("Update others called");
         Machine pred = null;
         for (int i = 0; i < fingers.length; i++) {
-            int pkey = nodeKey - (1 << i);
-            if (pkey < 0) pkey = pkey + keySpace;
+            int id = nodeKey - (int)Math.pow(2,i) + 1;
+            if (id < 0)
+                id = id + keySpace;
             try {
-                pred = new Machine(findPredecessor(pkey));
-                if (pred.getHashID() != nodeKey) {
+
+                pred = new Machine(findPredecessor(id));
+                if(pred.getHashID() != nodeKey) {
                     TTransport nodeTransport = new TSocket(pred.hostname, pred.port);
                     TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
                     Node.Client clientForUpdatingOthers = new Node.Client(nodeProtocol);
                     nodeTransport.open();
-                    System.out.println("Succesfully connected to the node :" + pred.toString());
+                    System.out.println("Calling updateFingerTable for :" + pred.getHashID() + "for index :" + i);
                     clientForUpdatingOthers.updateFingerTable(self.toString(), i);
                     nodeTransport.close();
                 }
@@ -429,10 +430,9 @@ public class NodeHandler implements Node.Iface {
                 System.out.println("Error in updating the finger table for entry " + i + " in node " + pred.toString());
                 e.printStackTrace();
             }
-            System.out.println("Printing after update others!!!!");
-            printFingerTable();
 
         }
+        System.out.println("Printing after update others!!!!");
         return true;
     }
 }
