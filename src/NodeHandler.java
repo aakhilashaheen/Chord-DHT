@@ -62,7 +62,7 @@ public class NodeHandler implements Node.Iface {
                Node.Client startNodeClient = new Node.Client(nodeProtocol);
                System.out.println("Node is trying to connect to the destination node." + destNode.toString());
                nodeTransport.open();
-               startNodeClient.getGenre(bookTitle);
+               bookGenre = startNodeClient.getGenre(bookTitle);
                nodeTransport.close();
            } catch (Exception e) {
                System.out.println("Could not get the book " + bookTitle) ;
