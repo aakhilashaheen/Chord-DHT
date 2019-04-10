@@ -37,7 +37,7 @@ public class Node {
 
   public interface Iface {
 
-    public String setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException;
+    public void setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException;
 
     public String getGenre(String bookTitle) throws org.apache.thrift.TException;
 
@@ -111,10 +111,10 @@ public class Node {
       super(iprot, oprot);
     }
 
-    public String setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException
+    public void setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException
     {
       send_setGenre(bookTitle, bookGenre);
-      return recv_setGenre();
+      recv_setGenre();
     }
 
     public void send_setGenre(String bookTitle, String bookGenre) throws org.apache.thrift.TException
@@ -125,14 +125,11 @@ public class Node {
       sendBase("setGenre", args);
     }
 
-    public String recv_setGenre() throws org.apache.thrift.TException
+    public void recv_setGenre() throws org.apache.thrift.TException
     {
       setGenre_result result = new setGenre_result();
       receiveBase(result, "setGenre");
-      if (result.isSetSuccess()) {
-        return result.success;
-      }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "setGenre failed: unknown result");
+      return;
     }
 
     public String getGenre(String bookTitle) throws org.apache.thrift.TException
@@ -423,13 +420,13 @@ public class Node {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.thrift.TException {
+      public void getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_setGenre();
+        (new Client(prot)).recv_setGenre();
       }
     }
 
@@ -822,7 +819,7 @@ public class Node {
 
       public setGenre_result getResult(I iface, setGenre_args args) throws org.apache.thrift.TException {
         setGenre_result result = new setGenre_result();
-        result.success = iface.setGenre(args.bookTitle, args.bookGenre);
+        iface.setGenre(args.bookTitle, args.bookGenre);
         return result;
       }
     }
@@ -1078,7 +1075,7 @@ public class Node {
       return processMap;
     }
 
-    public static class setGenre<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, setGenre_args, String> {
+    public static class setGenre<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, setGenre_args, Void> {
       public setGenre() {
         super("setGenre");
       }
@@ -1087,12 +1084,11 @@ public class Node {
         return new setGenre_args();
       }
 
-      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<String>() { 
-          public void onComplete(String o) {
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
             setGenre_result result = new setGenre_result();
-            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -1124,7 +1120,7 @@ public class Node {
         return false;
       }
 
-      public void start(I iface, setGenre_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+      public void start(I iface, setGenre_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.setGenre(args.bookTitle, args.bookGenre,resultHandler);
       }
     }
@@ -2162,7 +2158,6 @@ public class Node {
   public static class setGenre_result implements org.apache.thrift.TBase<setGenre_result, setGenre_result._Fields>, java.io.Serializable, Cloneable, Comparable<setGenre_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setGenre_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2170,11 +2165,10 @@ public class Node {
       schemes.put(TupleScheme.class, new setGenre_resultTupleSchemeFactory());
     }
 
-    public String success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+;
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2189,8 +2183,6 @@ public class Node {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 0: // SUCCESS
-            return SUCCESS;
           default:
             return null;
         }
@@ -2229,13 +2221,9 @@ public class Node {
         return _fieldName;
       }
     }
-
-    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setGenre_result.class, metaDataMap);
     }
@@ -2243,20 +2231,10 @@ public class Node {
     public setGenre_result() {
     }
 
-    public setGenre_result(
-      String success)
-    {
-      this();
-      this.success = success;
-    }
-
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public setGenre_result(setGenre_result other) {
-      if (other.isSetSuccess()) {
-        this.success = other.success;
-      }
     }
 
     public setGenre_result deepCopy() {
@@ -2265,51 +2243,15 @@ public class Node {
 
     @Override
     public void clear() {
-      this.success = null;
-    }
-
-    public String getSuccess() {
-      return this.success;
-    }
-
-    public setGenre_result setSuccess(String success) {
-      this.success = success;
-      return this;
-    }
-
-    public void unsetSuccess() {
-      this.success = null;
-    }
-
-    /** Returns true if field success is set (has been assigned a value) and false otherwise */
-    public boolean isSetSuccess() {
-      return this.success != null;
-    }
-
-    public void setSuccessIsSet(boolean value) {
-      if (!value) {
-        this.success = null;
-      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case SUCCESS:
-        if (value == null) {
-          unsetSuccess();
-        } else {
-          setSuccess((String)value);
-        }
-        break;
-
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case SUCCESS:
-        return getSuccess();
-
       }
       throw new IllegalStateException();
     }
@@ -2321,8 +2263,6 @@ public class Node {
       }
 
       switch (field) {
-      case SUCCESS:
-        return isSetSuccess();
       }
       throw new IllegalStateException();
     }
@@ -2340,26 +2280,12 @@ public class Node {
       if (that == null)
         return false;
 
-      boolean this_present_success = true && this.isSetSuccess();
-      boolean that_present_success = true && that.isSetSuccess();
-      if (this_present_success || that_present_success) {
-        if (!(this_present_success && that_present_success))
-          return false;
-        if (!this.success.equals(that.success))
-          return false;
-      }
-
       return true;
     }
 
     @Override
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
-
-      boolean present_success = true && (isSetSuccess());
-      list.add(present_success);
-      if (present_success)
-        list.add(success);
 
       return list.hashCode();
     }
@@ -2372,16 +2298,6 @@ public class Node {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetSuccess()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       return 0;
     }
 
@@ -2402,13 +2318,6 @@ public class Node {
       StringBuilder sb = new StringBuilder("setGenre_result(");
       boolean first = true;
 
-      sb.append("success:");
-      if (this.success == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.success);
-      }
-      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -2452,14 +2361,6 @@ public class Node {
             break;
           }
           switch (schemeField.id) {
-            case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.success = iprot.readString();
-                struct.setSuccessIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2475,11 +2376,6 @@ public class Node {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.success != null) {
-          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          oprot.writeString(struct.success);
-          oprot.writeFieldEnd();
-        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2497,24 +2393,11 @@ public class Node {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, setGenre_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        BitSet optionals = new BitSet();
-        if (struct.isSetSuccess()) {
-          optionals.set(0);
-        }
-        oprot.writeBitSet(optionals, 1);
-        if (struct.isSetSuccess()) {
-          oprot.writeString(struct.success);
-        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, setGenre_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
-        if (incoming.get(0)) {
-          struct.success = iprot.readString();
-          struct.setSuccessIsSet(true);
-        }
       }
     }
 

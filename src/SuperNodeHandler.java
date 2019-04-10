@@ -62,7 +62,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         if (predID == uniqueHashId)
             predID = Collections.max(assignedIds);
 
-        Machine prev = getNode(predID);
+        Machine prev = getNodePrev(predID);
         if(prev == null)
             return "FALSE";
         nodeList += m.toString() + ",";
@@ -86,12 +86,13 @@ public class SuperNodeHandler implements SuperNode.Iface {
 
     @Override
     public String getNode() throws TException {
+        System.out.println("Inside getNode");
         // TODO: Make this random
-        //int index = (int)(Math.random() * (activeNodes.size()));
-        return activeNodes.get(0).toString();
+        int index = (int)(Math.random() * (activeNodes.size()));
+        return activeNodes.get(index).toString();
     }
 
-    public Machine getNode(int id){
+    public Machine getNodePrev(int id){
         for(int i = 0; i < activeNodes.size() ; i++){
             if(activeNodes.get(i).getHashID() == id)
                 return activeNodes.get(i);
