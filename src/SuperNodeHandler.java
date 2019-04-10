@@ -16,6 +16,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
     private HashService hashService;
     private int port;
     private int maxNodes;
+    private int currentNumberOfNodesIntheSystem = 0;
 
     String nodeList = "";
 
@@ -46,6 +47,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
             }
             m.setHashID(keyForNode);
             assignedIds.add(keyForNode);
+            activeNodes.add(m);
             Collections.sort(assignedIds);
 
             int predID = keyForNode;
@@ -80,7 +82,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
 
         synchronized (this) {
             joinInProgress = false;
-            activeNodes.add(new Machine(machine));
+            currentNumberOfNodesIntheSystem = activeNodes.size();
         }
 
         return "Success";
