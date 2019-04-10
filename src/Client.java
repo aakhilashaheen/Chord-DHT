@@ -5,7 +5,6 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.util.Scanner;
 
@@ -72,14 +71,21 @@ public class Client {
                 if(command.toLowerCase().equals("get")) {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
-                    System.out.println("The genre of " + bookTitle + " is " + node.getGenreRecursively(bookTitle));
+                    String[] results = node.getGenreRecursively(bookTitle).split("##");
+                    System.out.println("The genre of " + bookTitle + " is " + results[0]);
+                    for(int i = 0; i < results.length; ++i)
+                        if(!results[i].isEmpty())
+                            System.out.println("Found via " + results[i]);
                 } else if(command.toLowerCase().equals("set")) {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
                     System.out.print("Enter book genre > ");
                     String bookGenre = inp.nextLine();
-                    node.setGenreRecursively(bookTitle, bookGenre);
+                    String[] results = node.setGenreRecursively(bookTitle, bookGenre).split("##");
                     System.out.println("Title set.");
+                    for(int i = 0; i < results.length; ++i)
+                        if(!results[i].isEmpty())
+                            System.out.println("Set via " + results[i]);
                 } else if(command.toLowerCase().equals("finger")){
                     node.printFingerTable();
                     String[] nodes = activeNodes.split("#");
@@ -93,11 +99,10 @@ public class Client {
                         Node.Client tempClient = new Node.Client(tempProtocol);
                         tempClient.printFingerTable();
                         tempTransport.close();
-
                     }
 
                 } else if(command.toLowerCase().equals("file")) {
-                    System.out.println("Enter filename > ");
+                    System.out.print("Enter filename > ");
                     String filename = inp.nextLine();
                     BufferedReader file = new BufferedReader(new FileReader(filename));
                     String line;
@@ -105,7 +110,8 @@ public class Client {
                     while((line = file.readLine()) != null) {
                         String[] book = line.split(":");
                         node.setGenreRecursively(book[0], book[1]);
-                        if(book[1].equals(node.getGenre(book[0])))
+                        String result = node.getGenreRecursively(book[0]).split("##")[0];
+                        if(book[1].equals(node.getGenre(result)))
                             ++success;
                         else
                             System.out.println("The book " + book[0] + ", " + book[1] + " could not be set correctly.");
@@ -113,9 +119,9 @@ public class Client {
                     }
                     file.close();
                     if(success == lines)
-                        System.out.println("All " + lines + "/" + success + " books were set correctly");
+                        System.out.println("All " + lines + "/" + success + " books were set correctly.");
                     else
-                        System.out.println("Only " + success + "/" + " books were set correctly.");
+                        System.out.println("Only " + success + "/" + lines + " books were set correctly.");
                 } else {
                     System.out.println("Could not understand command. Please try again.");
                 }

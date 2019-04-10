@@ -48,7 +48,7 @@ public class NodeHandler implements Node.Iface {
                 e.printStackTrace();
             }
         }
-        return result + ", " + self.toString();
+        return result + "##" + self.toString();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class NodeHandler implements Node.Iface {
                 e.printStackTrace();
             }
         }
-        return result + ", " + self.toString();
+        return result + "##" + self.toString();
 
     }
 
