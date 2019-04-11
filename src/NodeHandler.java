@@ -522,8 +522,8 @@ public class NodeHandler implements Node.Iface {
         for (int i = 0; i < fingerTableSize; i++) {
             System.out.println(fingers[i].getIntervalStart() + "|" + fingers[i].getIntervalEnd() + "|" + fingers[i].getSuccessor().toString());
         }
-        System.out.println("Predecessor for : "+ self.toString()  );
-        System.out.println("Predecessor for : "+ predecessor.toString());
+        System.out.println("Node Info : "+" IP : "+self.hostname + " : Port: " +self.port+ " :key :" + self.getHashID()  );
+        System.out.println("Predecessor : "+ predecessor.toString());
     }
 
 
