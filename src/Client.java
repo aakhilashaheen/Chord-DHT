@@ -73,7 +73,7 @@ public class Client {
                 if(command.toLowerCase().equals("get")) {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
-                    String[] results = node.getGenreRecursively(bookTitle).split("##");
+                    String[] results = node.getGenre(bookTitle).split("##");
                     if(results[0].equals("BOOK_NOT_FOUND"))
                         System.out.println("Book not found.");
                     else
@@ -86,7 +86,7 @@ public class Client {
                     String bookTitle = inp.nextLine();
                     System.out.print("Enter book genre > ");
                     String bookGenre = inp.nextLine();
-                    String[] results = node.setGenreRecursively(bookTitle, bookGenre).split("##");
+                    String[] results = node.setGenre(bookTitle, bookGenre).split("##");
                     System.out.println("Title set.");
                     for(int i = 0; i < results.length; ++i)
                         if(!results[i].isEmpty())
@@ -114,8 +114,8 @@ public class Client {
                     int success = 0, lines = 0;
                     while((line = file.readLine()) != null) {
                         String[] book = line.split(":");
-                        node.setGenreRecursively(book[0], book[1]);
-                        String result = node.getGenreRecursively(book[0]).split("##")[0];
+                        node.setGenre(book[0], book[1]);
+                        String result = node.getGenre(book[0]).split("##")[0];
                         if(book[1].equals(result))
                             ++success;
                         else

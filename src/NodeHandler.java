@@ -23,7 +23,7 @@ public class NodeHandler implements Node.Iface {
 
 
     @Override
-    public String setGenreRecursively(String bookTitle, String bookGenre) throws TException{
+    public String setGenre(String bookTitle, String bookGenre) throws TException{
         System.out.println("Trying to set the genre at this node : " + self.toString());
         int bookkey = HashService.hash(bookTitle);
         System.out.println("Hash of the book is evaluated as " + bookkey);
@@ -39,7 +39,7 @@ public class NodeHandler implements Node.Iface {
                 Node.Client closestPreceedingClient = new Node.Client(nodeProtocol);
                 System.out.println("Node is trying to connect to the destination node." + destNode.toString());
                 nodeTransport.open();
-                result = closestPreceedingClient.setGenreRecursively(bookTitle, bookGenre);
+                result = closestPreceedingClient.setGenre(bookTitle, bookGenre);
                 nodeTransport.close();
             } catch (Exception e) {
                 System.out.println("Could not insert book genre into new node") ;
@@ -51,7 +51,7 @@ public class NodeHandler implements Node.Iface {
     }
 
     @Override
-    public String getGenreRecursively(String bookTitle) throws TException{
+    public String getGenre(String bookTitle) throws TException{
         System.out.println("Trying to get the genre at this node : " + self.toString());
         int bookkey = HashService.hash(bookTitle);
         System.out.println("Hash of the book is evaluated as " + bookkey);
@@ -72,10 +72,10 @@ public class NodeHandler implements Node.Iface {
                 Node.Client closestPreceedingClient = new Node.Client(nodeProtocol);
                 System.out.println("Node is trying to connect to the destination node." + destNode.toString());
                 nodeTransport.open();
-                result = closestPreceedingClient.getGenreRecursively(bookTitle);
+                result = closestPreceedingClient.getGenre(bookTitle);
                 nodeTransport.close();
             } catch (Exception e) {
-                System.out.println("Could not insert book genre into new node") ;
+                System.out.println("Could not insert book genre into new node");
                 e.printStackTrace();
             }
         }
@@ -83,63 +83,59 @@ public class NodeHandler implements Node.Iface {
         return result + "##" + self.toString();
     }
 
-
-
-
-
-    @Override
-    public void setGenre(String bookTitle, String bookGenre) throws TException {
-        System.out.println("Trying to set the genre at this node : " + self.toString());
-        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
-        Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));
-        if(destNode.getHashID() == nodeKey){
-           bookGenreMap.put(bookTitle, bookGenre);
-        }else{
-            try {
-                TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
-                TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
-                Node.Client startNodeClient = new Node.Client(nodeProtocol);
-                System.out.println("Node is trying to connect to the destination node." + destNode.toString());
-                nodeTransport.open();
-                startNodeClient.setGenre(bookTitle, bookGenre);
-                nodeTransport.close();
-            } catch (Exception e) {
-                System.out.println("Could not insert book genre into new node") ;
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    @Override
-    public String getGenre(String bookTitle) throws TException {
-        List<String> hops = new ArrayList<String>();
-
-       System.out.println("Trying to get book genre from this node "+ self.toString());
-        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
-       Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));
-       String bookGenre = "" ;
-       if(destNode.getHashID() == nodeKey){
-           bookGenre = bookGenreMap.get(bookTitle);
-           if(bookGenre == null)
-               System.out.println("No entry found");
-       }else{
-           try {
-               TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
-               TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
-               Node.Client startNodeClient = new Node.Client(nodeProtocol);
-               System.out.println("Node is trying to connect to the destination node." + destNode.toString());
-               nodeTransport.open();
-               bookGenre = startNodeClient.getGenre(bookTitle);
-               nodeTransport.close();
-           } catch (Exception e) {
-               System.out.println("Could not get the book " + bookTitle) ;
-               e.printStackTrace();
-           }
-
-       }
-       return bookGenre;
-    }
+//    @Override
+//    public void setGenre(String bookTitle, String bookGenre) throws TException {
+//        System.out.println("Trying to set the genre at this node : " + self.toString());
+//        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+//        Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));
+//        if(destNode.getHashID() == nodeKey){
+//           bookGenreMap.put(bookTitle, bookGenre);
+//        }else{
+//            try {
+//                TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
+//                TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+//                Node.Client startNodeClient = new Node.Client(nodeProtocol);
+//                System.out.println("Node is trying to connect to the destination node." + destNode.toString());
+//                nodeTransport.open();
+//                startNodeClient.setGenre(bookTitle, bookGenre);
+//                nodeTransport.close();
+//            } catch (Exception e) {
+//                System.out.println("Could not insert book genre into new node") ;
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
+//
+//    @Override
+//    public String getGenre(String bookTitle) throws TException {
+//        List<String> hops = new ArrayList<String>();
+//
+//       System.out.println("Trying to get book genre from this node "+ self.toString());
+//        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+//       Machine destNode = new Machine(findSuccessor(HashService.hash(bookTitle)));
+//       String bookGenre = "" ;
+//       if(destNode.getHashID() == nodeKey){
+//           bookGenre = bookGenreMap.get(bookTitle);
+//           if(bookGenre == null)
+//               System.out.println("No entry found");
+//       }else{
+//           try {
+//               TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
+//               TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
+//               Node.Client startNodeClient = new Node.Client(nodeProtocol);
+//               System.out.println("Node is trying to connect to the destination node." + destNode.toString());
+//               nodeTransport.open();
+//               bookGenre = startNodeClient.getGenre(bookTitle);
+//               nodeTransport.close();
+//           } catch (Exception e) {
+//               System.out.println("Could not get the book " + bookTitle) ;
+//               e.printStackTrace();
+//           }
+//
+//       }
+//       return bookGenre;
+//    }
 
     @Override
     public void updateDHT(String nodesInTheSystem) throws TException {
@@ -252,13 +248,21 @@ public class NodeHandler implements Node.Iface {
             return (key >= start || key < end );
         }
     }
-    private boolean responsibilityCheck(int predecessorId, int selfId, int key){
-        if(predecessorId > selfId){
-            return key > predecessorId && key <= selfId;
-        }else{
-            return key > predecessorId || key <= selfId;
-        }
+
+    private boolean responsibilityCheck(int lower, int upper, int key) {
+        if(lower < upper)
+            return lower < key && key <= upper;
+        else
+            return lower < key || key <= upper;
     }
+//
+//    private boolean responsibilityCheck(int predecessorID, int selfID, int key) {
+//        if(predecessorID > selfID) {
+//            return key > predecessorId && key <= selfId;
+//        }else{
+//            return key > predecessorId || key <= selfId;
+//        }
+//    }
     @Override
     public boolean updatePredecessor(String node) throws TException {
         System.out.println("Updating the predecessor to : " + node);
