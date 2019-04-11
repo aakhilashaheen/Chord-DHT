@@ -78,9 +78,15 @@ public class Client {
                         System.out.println("Book not found.");
                     else
                         System.out.println("The genre of " + bookTitle + " is " + results[0]);
+                    boolean first = true;
                     for(int i = 1; i < results.length; ++i)
-                        if(!results[i].isEmpty())
-                            System.out.println("Found via " + results[i]);
+                        if(!results[i].isEmpty()) {
+                            if(first) {
+                                System.out.println("Found at" + results[i]);
+                                first = false;
+                            } else
+                                System.out.println("via " + results[i]);
+                        }
                 } else if(command.toLowerCase().equals("set")) {
                     System.out.print("Enter book title > ");
                     String bookTitle = inp.nextLine();
@@ -88,9 +94,15 @@ public class Client {
                     String bookGenre = inp.nextLine();
                     String[] results = node.setGenre(bookTitle, bookGenre).split("##");
                     System.out.println("Title set.");
+                    boolean first = true;
                     for(int i = 0; i < results.length; ++i)
-                        if(!results[i].isEmpty())
-                            System.out.println("Set via " + results[i]);
+                        if(!results[i].isEmpty()) {
+                            if(first) {
+                                System.out.println("Set at" + results[i]);
+                                first = false;
+                            } else
+                                System.out.println("via " + results[i]);
+                        }
                 } else if(command.toLowerCase().equals("finger")){
                     node.printFingerTable();
                     String[] nodes = activeNodes.split("#");
