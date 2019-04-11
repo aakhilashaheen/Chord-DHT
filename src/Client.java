@@ -104,7 +104,7 @@ public class Client {
                                 } else
                                     System.out.println("via " + results[i]);
                             }
-                    } else if (command.toLowerCase().equals("finger")) {
+                    } else if (command.toLowerCase().equals("info")) {
                         node.printFingerTable();
                         String[] nodes = activeNodes.split("#");
                         for (int i = 1; i < nodes.length; ++i) {
