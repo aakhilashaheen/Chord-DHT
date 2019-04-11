@@ -38,6 +38,10 @@ public class SuperNodeHandler implements SuperNode.Iface {
             synchronized (this){
                 joinInProgress = true;
             }
+            if(activeNodes.size() == 1){
+                System.out.println("Update predecessor for node[0]");
+
+            }
             System.out.println("Received join request from : " + hostname + port);
             Machine m = new Machine(hostname, port);
             int keyForNode = hashService.hash(m.toString());
@@ -49,7 +53,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
             m.setHashID(keyForNode);
             assignedIds.add(keyForNode);
             activeNodes.add(m);
-            Collections.sort(assignedIds);
+            Collections.sort(assignedIds, Collections.reverseOrder());
 
             int predID = keyForNode;
             Iterator<Integer> iterator = assignedIds.iterator();

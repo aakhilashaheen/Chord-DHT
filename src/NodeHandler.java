@@ -25,16 +25,14 @@ public class NodeHandler implements Node.Iface {
     @Override
     public String setGenreRecursively(String bookTitle, String bookGenre) throws TException{
         System.out.println("Trying to set the genre at this node : " + self.toString());
-        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
-
+        int bookkey = HashService.hash(bookTitle);
+        System.out.println("Hash of the book is evaluated as " + bookkey);
         String result = "";
-
-        Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
-
-        if(destNode.getHashID() == self.getHashID()){
-            System.out.println("Node responsible for insert : "+ self.hostname);
+        if(responsibilityCheck(predecessor.getHashID(), self.getHashID(), bookkey)){
+            System.out.println("Node responsible for insert : "+ self.toString());
             bookGenreMap.put(bookTitle, bookGenre);
         }else{
+            Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
             try {
                 TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
                 TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
@@ -48,23 +46,26 @@ public class NodeHandler implements Node.Iface {
                 e.printStackTrace();
             }
         }
+
         return result + "##" + self.toString();
     }
 
     @Override
     public String getGenreRecursively(String bookTitle) throws TException{
-
         System.out.println("Trying to get the genre at this node : " + self.toString());
-        System.out.println("Hash of the book is evaluated as "+HashService.hash(bookTitle) );
+        int bookkey = HashService.hash(bookTitle);
+        System.out.println("Hash of the book is evaluated as " + bookkey);
         String result = "";
-        Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
-        if(destNode.getHashID() == self.getHashID()){
-            System.out.println("Node responsible for insert : "+ self.hostname);
+
+        if(responsibilityCheck(predecessor.getHashID(), self.getHashID(), bookkey)){
+            System.out.println("Key for the book is" +HashService.hash(bookTitle));
+            System.out.println("Node responsible for insert : "+ self.toString());
             if(!bookGenreMap.containsKey(bookTitle))
                 result = "BOOK_NOT_FOUND";
             else
                 result = bookGenreMap.get(bookTitle);
         }else{
+            Machine destNode = new Machine(closestPrecedingFinger(HashService.hash(bookTitle)));
             try {
                 TTransport nodeTransport = new TSocket(destNode.hostname, destNode.port);
                 TProtocol nodeProtocol = new TBinaryProtocol(nodeTransport);
@@ -78,8 +79,8 @@ public class NodeHandler implements Node.Iface {
                 e.printStackTrace();
             }
         }
-        return result + "##" + self.toString();
 
+        return result + "##" + self.toString();
     }
 
 
@@ -251,7 +252,13 @@ public class NodeHandler implements Node.Iface {
             return (key >= start || key < end );
         }
     }
-
+    private boolean responsibilityCheck(int predecessorId, int selfId, int key){
+        if(predecessorId > selfId){
+            return key > predecessorId && key <= selfId;
+        }else{
+            return key > predecessorId || key <= selfId;
+        }
+    }
     @Override
     public boolean updatePredecessor(String node) throws TException {
         System.out.println("Updating the predecessor to : " + node);
@@ -515,6 +522,8 @@ public class NodeHandler implements Node.Iface {
         for (int i = 0; i < fingerTableSize; i++) {
             System.out.println(fingers[i].getIntervalStart() + "|" + fingers[i].getIntervalEnd() + "|" + fingers[i].getSuccessor().toString());
         }
+        System.out.println("Predecessor for : "+ self.toString()  );
+        System.out.println("Predecessor for : "+ predecessor.toString());
     }
 
 
