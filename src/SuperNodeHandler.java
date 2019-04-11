@@ -7,6 +7,9 @@ import org.apache.thrift.transport.TTransport;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/*The coordinator node that acts as an entry point to every one trying to contact DHT. Stores minimal information
+about the nodes present.
+ */
 public class SuperNodeHandler implements SuperNode.Iface {
 
     private boolean joinInProgress = false;
@@ -38,8 +41,9 @@ public class SuperNodeHandler implements SuperNode.Iface {
             synchronized (this){
                 joinInProgress = true;
             }
-            if(activeNodes.size() == 1){
-                System.out.println("Update predecessor for node[0]");
+            if(activeNodes.size() == maxNodes){
+                System.out.println("Maximum number of nodes reached in the DHT");
+                return "NACK";
 
             }
             System.out.println("Received join request from : " + hostname + port);
@@ -55,19 +59,19 @@ public class SuperNodeHandler implements SuperNode.Iface {
             activeNodes.add(m);
             Collections.sort(assignedIds, Collections.reverseOrder());
 
-            int predID = keyForNode;
+            int predecessorId = keyForNode;
             Iterator<Integer> iterator = assignedIds.iterator();
             while (iterator.hasNext()) {
                 int next = iterator.next();
-                if (next < predID) {
-                    predID = next;
+                if (next < predecessorId) {
+                    predecessorId = next;
                     break;
                 }
             }
-            if (predID == keyForNode)
-                predID = Collections.max(assignedIds);
+            if (predecessorId == keyForNode)
+                predecessorId = Collections.max(assignedIds);
 
-            Machine prev = getNodePrev(predID);
+            Machine prev = getNodePrev(predecessorId);
             if(prev == null)
                 return "FALSE";
             nodeList += m.toString() + " , ";
@@ -77,8 +81,6 @@ public class SuperNodeHandler implements SuperNode.Iface {
         }else{
             return "NACK";
         }
-
-
 
     }
 
@@ -102,8 +104,7 @@ public class SuperNodeHandler implements SuperNode.Iface {
         }
 
         System.out.println("Inside getNode");
-//        int index = (int)(Math.random() * (activeNodes.size()));
-//        return activeNodes.get(index).toString();
+
         String nodes = "";
         for(Machine m : activeNodes) {
             nodes += m.toString() + "#";
