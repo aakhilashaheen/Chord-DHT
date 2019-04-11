@@ -249,20 +249,15 @@ public class NodeHandler implements Node.Iface {
         }
     }
 
-    private boolean responsibilityCheck(int lower, int upper, int key) {
-        if(lower < upper)
-            return lower < key && key <= upper;
-        else
-            return lower < key || key <= upper;
+
+    private boolean responsibilityCheck(int predecessorId, int selfId, int key) {
+        if(predecessorId > selfId) {
+            return key > predecessorId || key <= selfId;
+        }else{
+            return key > predecessorId && key <= selfId;
+        }
     }
-//
-//    private boolean responsibilityCheck(int predecessorID, int selfID, int key) {
-//        if(predecessorID > selfID) {
-//            return key > predecessorId && key <= selfId;
-//        }else{
-//            return key > predecessorId || key <= selfId;
-//        }
-//    }
+
     @Override
     public boolean updatePredecessor(String node) throws TException {
         System.out.println("Updating the predecessor to : " + node);
