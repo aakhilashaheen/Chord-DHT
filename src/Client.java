@@ -68,83 +68,88 @@ public class Client {
             Scanner inp = new Scanner(System.in);
 
             while(true) {
-                System.out.print("Enter command > ");
-                String command = inp.nextLine();
-                if(command.toLowerCase().equals("get")) {
-                    System.out.print("Enter book title > ");
-                    String bookTitle = inp.nextLine();
-                    String[] results = node.getGenre(bookTitle).split("##");
-                    if(results[0].equals("BOOK_NOT_FOUND"))
-                        System.out.println("Book not found.");
-                    else
-                        System.out.println("The genre of " + bookTitle + " is " + results[0]);
-                    boolean first = true;
-                    for(int i = 1; i < results.length; ++i)
-                        if(!results[i].isEmpty()) {
-                            if(first) {
-                                System.out.println("Found at" + results[i]);
-                                first = false;
-                            } else
-                                System.out.println("via " + results[i]);
-                        }
-                } else if(command.toLowerCase().equals("set")) {
-                    System.out.print("Enter book title > ");
-                    String bookTitle = inp.nextLine();
-                    System.out.print("Enter book genre > ");
-                    String bookGenre = inp.nextLine();
-                    String[] results = node.setGenre(bookTitle, bookGenre).split("##");
-                    System.out.println("Title set.");
-                    boolean first = true;
-                    for(int i = 0; i < results.length; ++i)
-                        if(!results[i].isEmpty()) {
-                            if(first) {
-                                System.out.println("Set at" + results[i]);
-                                first = false;
-                            } else
-                                System.out.println("via " + results[i]);
-                        }
-                } else if(command.toLowerCase().equals("finger")){
-                    node.printFingerTable();
-                    String[] nodes = activeNodes.split("#");
-                    for(int i = 1; i < nodes.length; ++i) {
-                        if(nodes[i].isEmpty())
-                            continue;
-                        Machine thisNode = new Machine(nodes[i]);
-                        TTransport tempTransport = new TSocket(thisNode.hostname, thisNode.port);
-                        TProtocol tempProtocol = new TBinaryProtocol(tempTransport);
-                        tempTransport.open();
-                        Node.Client tempClient = new Node.Client(tempProtocol);
-                        tempClient.printFingerTable();
-                        tempTransport.close();
-                    }
-
-                } else if(command.toLowerCase().equals("file")) {
-                    System.out.print("Enter filename > ");
-                    String filename = inp.nextLine();
-                    BufferedReader file = new BufferedReader(new FileReader(filename));
-                    String line;
-                    int success = 0, lines = 0;
-                    while((line = file.readLine()) != null) {
-                        String[] book = line.split(":");
-                        node.setGenre(book[0], book[1]);
-                        String result = node.getGenre(book[0]).split("##")[0];
-                        if(book[1].equals(result))
-                            ++success;
+                try {
+                    System.out.print("Enter command > ");
+                    String command = inp.nextLine();
+                    if (command.toLowerCase().equals("get")) {
+                        System.out.print("Enter book title > ");
+                        String bookTitle = inp.nextLine();
+                        String[] results = node.getGenre(bookTitle).split("##");
+                        if (results[0].equals("BOOK_NOT_FOUND"))
+                            System.out.println("Book not found.");
                         else
-                            System.out.println("The book " + book[0] + ", " + book[1] + " could not be set correctly.");
-                        ++lines;
+                            System.out.println("The genre of " + bookTitle + " is " + results[0]);
+                        boolean first = true;
+                        for (int i = 1; i < results.length; ++i)
+                            if (!results[i].isEmpty()) {
+                                if (first) {
+                                    System.out.println("Found at" + results[i]);
+                                    first = false;
+                                } else
+                                    System.out.println("via " + results[i]);
+                            }
+                    } else if (command.toLowerCase().equals("set")) {
+                        System.out.print("Enter book title > ");
+                        String bookTitle = inp.nextLine();
+                        System.out.print("Enter book genre > ");
+                        String bookGenre = inp.nextLine();
+                        String[] results = node.setGenre(bookTitle, bookGenre).split("##");
+                        System.out.println("Title set.");
+                        boolean first = true;
+                        for (int i = 0; i < results.length; ++i)
+                            if (!results[i].isEmpty()) {
+                                if (first) {
+                                    System.out.println("Set at" + results[i]);
+                                    first = false;
+                                } else
+                                    System.out.println("via " + results[i]);
+                            }
+                    } else if (command.toLowerCase().equals("finger")) {
+                        node.printFingerTable();
+                        String[] nodes = activeNodes.split("#");
+                        for (int i = 1; i < nodes.length; ++i) {
+                            if (nodes[i].isEmpty())
+                                continue;
+                            Machine thisNode = new Machine(nodes[i]);
+                            TTransport tempTransport = new TSocket(thisNode.hostname, thisNode.port);
+                            TProtocol tempProtocol = new TBinaryProtocol(tempTransport);
+                            tempTransport.open();
+                            Node.Client tempClient = new Node.Client(tempProtocol);
+                            tempClient.printFingerTable();
+                            tempTransport.close();
+                        }
+
+                    } else if (command.toLowerCase().equals("file")) {
+                        System.out.print("Enter filename > ");
+                        String filename = inp.nextLine();
+                        BufferedReader file = new BufferedReader(new FileReader(filename));
+                        String line;
+                        int success = 0, lines = 0;
+                        while ((line = file.readLine()) != null) {
+                            String[] book = line.split(":");
+                            node.setGenre(book[0], book[1]);
+                            String result = node.getGenre(book[0]).split("##")[0];
+                            if (book[1].equals(result))
+                                ++success;
+                            else
+                                System.out.println("The book " + book[0] + ", " + book[1] + " could not be set correctly.");
+                            ++lines;
+                        }
+                        file.close();
+                        if (success == lines)
+                            System.out.println("All " + lines + "/" + success + " books were set correctly.");
+                        else
+                            System.out.println("Only " + success + "/" + lines + " books were set correctly.");
+                    } else {
+                        System.out.println("Could not understand command. Please try again.");
                     }
-                    file.close();
-                    if(success == lines)
-                        System.out.println("All " + lines + "/" + success + " books were set correctly.");
-                    else
-                        System.out.println("Only " + success + "/" + lines + " books were set correctly.");
-                } else {
-                    System.out.println("Could not understand command. Please try again.");
+                }catch(Exception ex){
+                    System.out.println("Could not complete the request in the DHT due to internal error!");
                 }
             }
         }
         catch(Exception e) {
+            System.out.println("Exception occured in the DHT!!!!");
             e.printStackTrace();
         }
     }

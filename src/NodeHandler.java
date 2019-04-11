@@ -123,7 +123,6 @@ public class NodeHandler implements Node.Iface {
     }
 
 /*Used to build the DHT when a node joins
-
  */
     @Override
     public String findSuccessor(int key) throws TException {
@@ -506,6 +505,10 @@ public class NodeHandler implements Node.Iface {
         }
         System.out.println("Node Info : "+" IP : "+self.hostname + " : Port: " +self.port+ " :key :" + self.getHashID()  );
         System.out.println("Predecessor : "+ predecessor.toString());
+        System.out.println("Entries at stored at this node are: ");
+        for(Map.Entry bookGenre : bookGenreMap.entrySet()){
+            System.out.println(bookGenre.getKey() + ":" +bookGenre.getValue());
+        }
     }
 
 
